@@ -117,6 +117,7 @@ if (BUILD_SUPPORTED)
     #DFHACK_PLUGIN(versionosd versionosd.cpp)
 endif()
 
+add_subdirectory(announcetrigger)
 
 # this is the skeleton plugin. If you want to make your own, make a copy and then change it
 OPTION(BUILD_SKELETON "Build the skeleton plugin." OFF)
