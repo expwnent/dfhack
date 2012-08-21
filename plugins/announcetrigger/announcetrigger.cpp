@@ -46,7 +46,13 @@ DFhackCExport command_result plugin_init (color_ostream &out, std::vector <Plugi
 	//out.print("Testing................\n");
 	//command_result InvokeCommand(color_ostream &out, const std::string & command, std::vector <std::string> & parameters);
 	
-    return CR_OK;
+	/*PersistentDataItem nextReportToCheckFromPreviousRun = Core::getInstance().getWorld()->GetPersistentData("announcetrigger");
+	
+	if ( nextReportToCheckFromPreviousRun.isValid() ) {
+		nextReportToCheck = nextReportToCheckFromPreviousRun.ival(0);
+	}*/
+	
+	return CR_OK;
 }
 
 // This is called right before the plugin library is removed from memory.
@@ -130,14 +136,22 @@ static void dwarfsplosion(color_ostream& out) {
 
 DFhackCExport command_result plugin_onupdate ( color_ostream &out )
 {
+	static bool doOnce = false;
 	//out.print("plugin_onupdate\n");
 	
     // check run conditions
     if(!df::global::world || !df::global::world->map.block_index)
     {
         // give up if we shouldn't be running'
+		doOnce = false;
+		nextReportToCheck = 0;
         return CR_OK;
     }
+	
+	if ( !doOnce ) {
+		nextReportToCheck = df::global::world->status.next_report_id;
+		doOnce = true;
+	}
 	
 	CoreSuspender susp;
 	for ( size_t a = 0; a < df::global::world->units.all.size(); a++ ) {
