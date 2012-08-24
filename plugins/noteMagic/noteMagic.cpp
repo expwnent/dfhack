@@ -8,6 +8,7 @@
 #include "df/world.h"
 #include "df/ui.h"
 #include "modules/MapCache.h"
+#include "modules/World.h"
 //#include "df/
 
 #include <vector>
@@ -38,7 +39,7 @@ DFhackCExport command_result plugin_init(color_ostream& out, vector<PluginComman
 }
 
 DFhackCExport command_result plugin_onupdate(color_ostream& out) {
-    if (!df::global::world || !df::global::world->map.block_index)
+    if (!df::global::world || !df::global::world->map.block_index || Core::getInstance().getWorld()->ReadPauseState() )
         return CR_OK;
     
     CoreSuspender suspend;
