@@ -31,8 +31,8 @@ DFhackCExport command_result plugin_shutdown ( color_ostream &out )
 
 command_result embarkflattener (color_ostream &out, std::vector <std::string> & parameters) {
     CoreSuspender suspend;
-	
-	int32_t cx, cy, cz;
+    
+    int32_t cx, cy, cz;
     uint32_t xMax,yMax,zMax;
     Maps::getSize(xMax,yMax,zMax);
     uint32_t tileXMax = xMax * 16;
@@ -45,8 +45,8 @@ command_result embarkflattener (color_ostream &out, std::vector <std::string> & 
     }
     DFHack::DFCoord xy ((uint32_t)cx,(uint32_t)cy,cz);
     MapExtras::MapCache * mCache = new MapExtras::MapCache;
-	
-	for( uint32_t z = cz; z < zMax; z++ )
+    
+    for( uint32_t z = cz; z < zMax; z++ )
     {
         for( uint32_t x = 1; x < tileXMax-1; x++ )
         {
@@ -57,19 +57,19 @@ command_result embarkflattener (color_ostream &out, std::vector <std::string> & 
                 if (DFHack::isOpenTerrain(tt))
                     continue;
                 
-				bool wallBelow = false;
-				DFHack::DFCoord below(x,y,z-1);
-				if ( mCache->testCoord(below) ) {
-					df::tiletype belowType = mCache->tiletypeAt(below);
-					if ( DFHack::isWallTerrain(belowType) )
-						wallBelow = true;
-				}
-				
+                bool wallBelow = false;
+                DFHack::DFCoord below(x,y,z-1);
+                if ( mCache->testCoord(below) ) {
+                    df::tiletype belowType = mCache->tiletypeAt(below);
+                    if ( DFHack::isWallTerrain(belowType) )
+                        wallBelow = true;
+                }
+                
                 //set it to be open
-				if ( wallBelow )
-					mCache->setTiletypeAt(current, df::tiletype::StoneFloor1, false);
-				else
-					mCache->setTiletypeAt(current, df::tiletype::OpenSpace, false);
+                if ( wallBelow )
+                    mCache->setTiletypeAt(current, df::tiletype::StoneFloor1, false);
+                else
+                    mCache->setTiletypeAt(current, df::tiletype::OpenSpace, false);
             }
         }
     }
