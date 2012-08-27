@@ -1,5 +1,5 @@
 
-
+#include "announcetrigger.h"
 #include "Core.h"
 #include <Console.h>
 #include <Export.h>
