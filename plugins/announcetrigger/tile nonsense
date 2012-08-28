@@ -1,0 +1,42 @@
+
+    if ( false ) {
+		int32_t cx, cy, cz;
+		Gui::getCursorCoords(cx, cy, cz);
+		if ( cx != -30000 ) {
+			//print info about the flows at the cursor
+			df::map_block * bl = Maps::getBlock(cx/16,cy/16,cz);
+			for ( size_t a = 0; bl && a < bl->flows.size(); a++ ) {
+				df::flow_info* flow = bl->flows[a];
+				if ( flow->x != cx || flow->y != cy || flow->z != cz )
+					continue;
+				out.print("flow:\n"
+					"type = %d\n"
+					"mat_type = %d\n"
+					"mat_index = %d\n"
+					"density = %d\n"
+					"x = %d\n"
+					"y = %d\n"
+					"z = %d\n"
+					"anon_1 = %d\n"
+					"anon_2 = %d\n"
+					"anon_3 = %d\n"
+					"anon_4 = %d\n"
+					"anon_5 = %d\n\n",
+					(int)flow->type,
+					(int)flow->mat_type,
+					(int)flow->mat_index,
+					(int)flow->density,
+					(int)flow->x,
+					(int)flow->y,
+					(int)flow->z,
+					(int)flow->anon_1,
+					(int)flow->anon_2,
+					(int)flow->anon_3,
+					(int)flow->anon_4,
+					(int)flow->anon_5
+				);
+			}
+			//df::coord tileCoord(cx/16, cy/16, cz);
+			//df::block* block = cache.blockAt(tileCoord);
+		}
+	}
