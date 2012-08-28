@@ -44,7 +44,8 @@ DFHack::command_result AnnounceTrigger::slay_trigger(std::string& str, DFHack::c
             std::transform(name.begin(), name.end(), name.begin(), ::tolower);
             if ( name == target ) {
                 //best attempt to kill them: take away their blood
-                unit->body.blood_count = 0;
+                //unit->body.blood_count = 0;
+                unit->flags3.bits.scuttle=1;
                 break;
             }
         }
