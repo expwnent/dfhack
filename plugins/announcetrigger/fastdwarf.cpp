@@ -64,6 +64,6 @@ DFHack::command_result AnnounceTrigger::fastdwarf_trigger(std::string& str, DFHa
 }
 
 DFHack::command_result AnnounceTrigger::fastdwarf_init(DFHack::color_ostream& out) {
-    registerTrigger("fast", &AnnounceTrigger::fastdwarf_trigger, &AnnounceTrigger::fastdwarf_periodic);
+    registerTrigger("blessing of speed", &AnnounceTrigger::fastdwarf_trigger, &AnnounceTrigger::fastdwarf_periodic);
     return DFHack::CR_OK;
 }

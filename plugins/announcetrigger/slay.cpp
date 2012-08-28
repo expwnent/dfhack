@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cctype>
 
 #include "Types.h"
 #include "df/creature_raw.h"
@@ -18,7 +19,7 @@ DFHack::command_result AnnounceTrigger::slay_trigger(std::string& str, DFHack::c
     size_t i = str.find(std::string("slay ")) + 5;
     std::stringstream helper;
     for ( size_t a = i; a < str.length(); a++ ) {
-        if ( str[a] == ' ' )
+        if ( !isalpha(str[a]) )
             break;
         helper << str[a];
     }
