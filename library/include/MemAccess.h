@@ -1,6 +1,6 @@
 /*
 https://github.com/peterix/dfhack
-Copyright (c) 2009-2011 Petr Mrázek (peterix@gmail.com)
+Copyright (c) 2009-2012 Petr Mrázek (peterix@gmail.com)
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any
@@ -281,8 +281,14 @@ namespace DFHack
             /// get the DF Process FilePath
             std::string getPath();
 
+            /// millisecond tick count, exactly as DF uses
+            uint32_t getTickCount();
+
             /// modify permisions of memory range
             bool setPermisions(const t_memrange & range,const t_memrange &trgrange);
+
+            /// write a possibly read-only memory area
+            bool patchMemory(void *target, const void* src, size_t count);
     private:
         VersionInfo * my_descriptor;
         PlatformSpecific *d;

@@ -828,7 +828,7 @@ static void compute_custom_job(ProtectedJob *pj, df::job *job)
         using namespace df::enums::reaction_product_item_flags;
 
         VIRTUAL_CAST_VAR(prod, df::reaction_product_itemst, r->products[i]);
-        if (!prod || (prod->item_type < 0 && !prod->flags.is_set(CRAFTS)))
+        if (!prod || (prod->item_type < (df::item_type)0 && !prod->flags.is_set(CRAFTS)))
             continue;
 
         MaterialInfo mat(prod);
@@ -1380,15 +1380,15 @@ static void print_constraint(color_ostream &out, ItemConstraint *cv, bool no_job
 {
     Console::color_value color;
     if (cv->request_resume)
-        color = Console::COLOR_GREEN;
+        color = COLOR_GREEN;
     else if (cv->request_suspend)
-        color = Console::COLOR_CYAN;
+        color = COLOR_CYAN;
     else
-        color = Console::COLOR_DARKGREY;
+        color = COLOR_DARKGREY;
 
     out.color(color);
     out << prefix << "Constraint " << flush;
-    out.color(Console::COLOR_GREY);
+    out.color(COLOR_GREY);
     out << cv->config.val() << " " << flush;
     out.color(color);
     out << (cv->goalByCount() ? "count " : "amount ")
@@ -1437,18 +1437,18 @@ static void print_constraint(color_ostream &out, ItemConstraint *cv, bool no_job
         {
             if (pj->want_resumed)
             {
-                out.color(Console::COLOR_YELLOW);
+                out.color(COLOR_YELLOW);
                 out << start << " (delayed)" << endl;
             }
             else
             {
-                out.color(Console::COLOR_BLUE);
+                out.color(COLOR_BLUE);
                 out << start << " (suspended)" << endl;
             }
         }
         else
         {
-            out.color(Console::COLOR_GREEN);
+            out.color(COLOR_GREEN);
             out << start << endl;
         }
 
@@ -1472,11 +1472,11 @@ static void print_job(color_ostream &out, ProtectedJob *pj)
         isOptionEnabled(CF_AUTOMELT))
     {
         if (meltable_count <= 0)
-            out.color(Console::COLOR_CYAN);
+            out.color(COLOR_CYAN);
         else if (pj->want_resumed && !pj->isActuallyResumed())
-            out.color(Console::COLOR_YELLOW);
+            out.color(COLOR_YELLOW);
         else
-            out.color(Console::COLOR_GREEN);
+            out.color(COLOR_GREEN);
         out << "  Meltable: " << meltable_count << " objects." << endl;
         out.reset_color();
     }
