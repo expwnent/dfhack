@@ -48,26 +48,51 @@ command_result embarkflattener (color_ostream &out, std::vector <std::string> & 
     
     for( uint32_t z = cz; z < zMax; z++ )
     {
-        for( uint32_t x = 1; x < tileXMax-1; x++ )
+        for( uint32_t x = 0; x < tileXMax-0; x++ )
         {
-            for( uint32_t y = 1; y < tileYMax-1; y++ )
+            for( uint32_t y = 0; y < tileYMax-0; y++ )
             {
                 DFHack::DFCoord current(x,y,z);
+                df::tile_designation des = mCache->designationAt(current);
+                des.bits.hidden = 0;
+                des.bits.light = 1;
+                des.bits.subterranean = 0;
+                des.bits.outside = 1;
+                mCache->setDesignationAt(current, des);
                 df::tiletype tt = mCache->tiletypeAt(current);
                 if (DFHack::isOpenTerrain(tt))
                     continue;
+                if (z == cz && !(DFHack::isWallTerrain(tt))) {
+                    continue;
+                }
                 
                 bool wallBelow = false;
                 DFHack::DFCoord below(x,y,z-1);
+                df::tiletype belowType;
                 if ( mCache->testCoord(below) ) {
-                    df::tiletype belowType = mCache->tiletypeAt(below);
+                    belowType = mCache->tiletypeAt(below);
                     if ( DFHack::isWallTerrain(belowType) )
                         wallBelow = true;
                 }
                 
                 //set it to be open
-                if ( wallBelow )
-                    mCache->setTiletypeAt(current, df::tiletype::StoneFloor1, false);
+                if ( wallBelow ) {
+                    df::tiletype_material belowMat = DFHack::tileMaterial(belowType);
+                    switch(belowMat) {
+                        case df::enums::tiletype_material::SOIL: 
+                            mCache->setTiletypeAt(current, df::tiletype::/*GrassLightFloor1*/SoilFloor1, false);
+                            break;
+                        case df::enums::tiletype_material::STONE:
+                        case df::enums::tiletype_material::MINERAL:
+                            mCache->setTiletypeAt(current, df::tiletype::StoneFloor1, false);
+                            break;
+                        default:
+                            out.printerr("Error: belowMat == %d\n", (int32_t)belowMat);
+                            break;
+                    }
+                    //mCache->setTiletypeAt(current, df::tiletype::StoneFloor1, false);
+                    
+                }
                 else
                     mCache->setTiletypeAt(current, df::tiletype::OpenSpace, false);
             }
