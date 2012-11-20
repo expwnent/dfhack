@@ -8,6 +8,7 @@
 #include "df/world_history.h"
 #include "df/historical_figure.h"
 #include "df/histfig_hf_link.h"
+#include "df/death_info.h"
 #include "modules/Translation.h"
 
 #include <ctime>
@@ -55,10 +56,12 @@ struct DwarfWrapper {
     int32_t childIndex;
     int32_t parent1Index;
     int32_t parent2Index;
-    bool alive;
+    int32_t deathTime;
     
-    bool operator<(const DwarfWrapper a) const {
-        return age < a.age;
+    bool operator<(const DwarfWrapper& a) const {
+        //return age < a.age;
+        if ( age != a.age ) return age < a.age;
+        return ptr < a.ptr;
     }
 };
 
@@ -84,7 +87,7 @@ struct NameSorter {
     
     bool operator()(int32_t a, int32_t b) const {
         /*if ( favorite->find(a) == favorite->end() || favorite->find(b) == favorite->end() ) {
-            out->print("Doomed rhombus.\n"); ///////////////////////////////////////////////////test -1
+            out->print("Doomed rhombus.\n"); //test -1
         }*/
         int32_t founder1 = (*favorite)[a];
         int32_t founder2 = (*favorite)[b];
@@ -199,6 +202,8 @@ void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<in
     }
 }
 
+command_result writeNameHistory(color_ostream& out, vector<DwarfWrapper>& dwarves);
+
 command_result heritage(color_ostream& out, vector<string>& parameters) {
     clock_t start = clock();
     int32_t civ_id = df::global::ui->civ_id;
@@ -219,7 +224,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         wrapper.childIndex = -1;
         wrapper.parent1Index = -1;
         wrapper.parent2Index = -1;
-        wrapper.alive = figure->died_year == -1;
+        wrapper.deathTime = figure->died_year == -1 ? -1 : figure->died_year*ticksPerYear + figure->died_seconds;
         dwarves.push_back(wrapper);
     }
     
@@ -236,7 +241,22 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         wrapper.childIndex = -1;
         wrapper.parent1Index = -1;
         wrapper.parent2Index = -1;
-        wrapper.alive = unit->flags1.bits.dead == 0;
+        if ( unit->flags1.bits.dead == 0 )
+            wrapper.deathTime = -1;
+        else {
+            int32_t deathId = unit->counters.death_id;
+            int32_t deathIndex = df::death_info::binsearch_index(df::global::world->deaths.all, deathId);
+            if ( deathIndex == -1 ) {
+                out.print("Couldn't find death index.\n");
+                return CR_FAILURE;
+            }
+            df::death_info* info = df::global::world->deaths.all[deathIndex];
+            if ( info->event_year == -1 ) {
+                out.print("Death event doesn't know when it happened?\n");
+                return CR_FAILURE;
+            }
+            wrapper.deathTime = info->event_year*ticksPerYear + info->event_time;
+        }
         dwarves.push_back(wrapper);
     }
     
@@ -486,7 +506,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         
         for ( size_t b = 0; b < 2; b++ ) {
             nameFrequency[newName[b]]++;
-            if ( dwarves[a].alive ) {
+            if ( dwarves[a].deathTime == -1 ) {
                 nameAliveFrequency[newName[b]]++;
                 if ( nameLeader[newName[b]] == -1 )
                     nameLeader[newName[b]]  = a;
@@ -505,7 +525,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     out.print("Computing influence.\n");
     //compute influence
     for ( int32_t a = dwarves.size()-1; a >= 0; a-- ) {
-        if ( !dwarves[a].alive )
+        if ( dwarves[a].deathTime != -1 )
             continue;
         if ( !dwarves[a].historical ) {
             df::unit* unit = (df::unit*)dwarves[a].ptr;
@@ -576,6 +596,85 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     clock_t end = clock();
     float time = (float)(end - start)/CLOCKS_PER_SEC;
     out.print("Total time: %f\nDwarves per second: %f\n", time, dwarves.size() / time);
+    
+    return writeNameHistory(out, dwarves);
+    //return CR_OK;
+}
+
+
+struct Event {
+    int32_t time;
+    bool birth;
+    size_t who;
+    
+    bool operator<(const Event& e) const {
+        return time < e.time;
+    }
+};
+
+
+command_result writeNameHistory(color_ostream& out, vector<DwarfWrapper>& dwarves) {
+    vector<Event> events;
+    for ( size_t a = 0; a < dwarves.size(); a++ ) {
+        if ( !dwarves[a].historical ) {
+            df::unit* unit = (df::unit*)dwarves[a].ptr;
+            if ( unit->hist_figure_id != -1 ) {
+                continue;
+            }
+        }
+        
+        Event e;
+        e.time = dwarves[a].age;
+        e.birth = true;
+        e.who = a;
+        events.push_back(e);
+        
+        if ( dwarves[a].deathTime != -1 ) {
+            e.time = dwarves[a].deathTime;
+            e.birth = false;
+            e.who = a;
+            events.push_back(e);
+        }
+    }
+    
+    sort(events.begin(), events.end());
+    
+    size_t wordmax = df::global::world->raws.language.words.size();
+    vector<vector<int32_t> > nameFrequencyHistory(wordmax);
+    vector<int32_t> nameFrequency(wordmax);
+    vector<int32_t> years;
+    
+    //NameSorter sorter(&nameFounder);
+    //sorter.out = &out;
+    
+    vector<set<DwarfWrapper> > nameHolderAges(wordmax);
+    
+    int32_t year = 0;
+    for ( size_t a = 0; a < events.size(); a++ ) {
+        DwarfWrapper& wrap = dwarves[events[a].who];
+        if ( events[a].birth ) {
+            for ( int b = 0; b < 2; b++ ) {
+                nameFrequency[wrap.name->words[b]]++;
+                nameHolderAges[wrap.name->words[b]].insert(wrap);
+            }
+        } else {
+            for ( int b = 0; b < 2; b++ ) {
+                nameFrequency[wrap.name->words[b]]--;
+                nameHolderAges[wrap.name->words[b]].erase(wrap);
+            }
+        }
+        
+        if ( a+1 >= events.size() || events[a+1].time/ticksPerYear > year ) {
+            for ( size_t b = 0; b < wordmax; b++ ) {
+                nameFrequencyHistory[b].push_back(nameFrequency[b]);
+            }
+            years.push_back(year);
+            if ( a+1 < events.size() ) {
+                year = events[a+1].time/ticksPerYear;
+            }
+        }
+    }
+    
     return CR_OK;
 }
 
