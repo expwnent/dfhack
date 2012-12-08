@@ -376,8 +376,13 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     }
     //now, all the information we need is collected into the wrappers
     
-    //TODO: use world name seed
-    srand(57);
+    string& seedStr = df::global::world->worldgen.worldgen_parms.name_seed;
+    int32_t seed = 3;
+    for ( size_t a = 0; a < seedStr.length(); a++ ) {
+        seed *= 65537;
+        seed += seedStr[a];
+    }
+    srand(seed);
     
     size_t wordmax = df::global::world->raws.language.words.size();
     vector<int32_t> nameFrequency(wordmax);
@@ -564,7 +569,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         sorted.push_back(a);
     }
     sorter.favorite = &nameAliveFrequency;
-    sort(sorted.begin(), sorted.end(), sorter);
+    //sort(sorted.begin(), sorted.end(), sorter);
     
     /*out.print("printing data\n");
     //for ( int32_t a = wordmax-1; a >= 0; a-- ) {
