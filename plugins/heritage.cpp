@@ -27,7 +27,6 @@ TODO
 */
 
 using namespace std;
-
 using namespace DFHack;
 
 DFHACK_PLUGIN("heritage");
@@ -47,10 +46,14 @@ DFhackCExport command_result plugin_init(color_ostream& out, vector<PluginComman
 }
 
 //DFhackCExport command_result plugin_onupdate(color_ostream& out);
+
+/*
+ * Used to collect all necessary information about both historical and local dwarves.
+ **/
 struct DwarfWrapper {
     bool historical;
-    void* ptr;
-    int32_t age; //actually birth time
+    void* ptr; //ptr to actual unit, or historical unit
+    int32_t birthTime;
     df::language_name* name;
     int32_t childCount;
     int32_t childIndex;
@@ -59,8 +62,8 @@ struct DwarfWrapper {
     int32_t deathTime;
     
     bool operator<(const DwarfWrapper& a) const {
-        //return age < a.age;
-        if ( age != a.age ) return age < a.age;
+        //return birthTime < a.birthTime;
+        if ( birthTime != a.birthTime ) return birthTime < a.birthTime;
         return ptr < a.ptr;
     }
 };
@@ -218,7 +221,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         DwarfWrapper wrapper;
         wrapper.historical = true;
         wrapper.ptr = figure;
-        wrapper.age = figure->born_year*ticksPerYear + figure->born_seconds;
+        wrapper.birthTime = figure->born_year*ticksPerYear + figure->born_seconds;
         wrapper.name = &figure->name;
         wrapper.childCount = 0;
         wrapper.childIndex = -1;
@@ -235,7 +238,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         DwarfWrapper wrapper;
         wrapper.historical = false;
         wrapper.ptr = unit;
-        wrapper.age = unit->relations.birth_year*ticksPerYear + unit->relations.birth_time;
+        wrapper.birthTime = unit->relations.birth_year*ticksPerYear + unit->relations.birth_time;
         wrapper.name = &unit->name;
         wrapper.childCount = 0;
         wrapper.childIndex = -1;
@@ -583,10 +586,10 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                 "    Living members: %d\n"
                 "    Historical members: %d\n\n",
             df::global::world->raws.language.translations[0]->words[i]->c_str(),
-            dwarves[nameFounder[i]/2].age/ticksPerYear,
+            dwarves[nameFounder[i]/2].birthTime/ticksPerYear,
             DFHack::Translation::TranslateName(dwarves[nameFounder[i]/2].name, false).c_str(),
             DFHack::Translation::TranslateName(dwarves[nameLeader[i]].name, false).c_str(),
-            dwarves[nameLeader[i]].age/ticksPerYear,
+            dwarves[nameLeader[i]].birthTime/ticksPerYear,
             nameInfluence[i],
             nameAliveFrequency[i],
             nameFrequency[i]
@@ -595,10 +598,10 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     
     clock_t end = clock();
     float time = (float)(end - start)/CLOCKS_PER_SEC;
-    out.print("Total time: %f\nDwarves per second: %f\n", time, dwarves.size() / time);
+    out.print("Total time: %f\nTotal dwarves: %d\nDwarves per second: %f\n", time, dwarves.size(), dwarves.size() / time);
     
-    return writeNameHistory(out, dwarves);
-    //return CR_OK;
+    //return writeNameHistory(out, dwarves);
+    return CR_OK;
 }
 
 
@@ -624,7 +627,7 @@ command_result writeNameHistory(color_ostream& out, vector<DwarfWrapper>& dwarve
         }
         
         Event e;
-        e.time = dwarves[a].age;
+        e.time = dwarves[a].birthTime;
         e.birth = true;
         e.who = a;
         events.push_back(e);
