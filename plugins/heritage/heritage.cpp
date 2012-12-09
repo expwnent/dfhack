@@ -9,6 +9,7 @@
 #include "df/historical_figure.h"
 #include "df/histfig_hf_link.h"
 #include "df/death_info.h"
+#include "df/language_word.h"
 #include "modules/Translation.h"
 
 #include <ctime>
@@ -55,6 +56,7 @@ DFhackCExport command_result plugin_init(color_ostream& out, vector<PluginComman
  **/
 struct DwarfWrapper {
     bool historical;
+    bool local;
     void* ptr; //ptr to actual unit, or historical unit
     int32_t birthTime;
     df::language_name* name;
@@ -101,6 +103,34 @@ struct NameSorter {
     }
 };
 
+typedef union {
+    vector<string*> *strVector;
+    vector<df::language_word*> *wordPtr;
+} AlphabeticHelper;
+
+struct AlphabeticSorter {
+    color_ostream* out;
+    AlphabeticHelper favorite;
+    bool str;
+
+    /*AlphabeticSorter(AlphabeticHelper favorite1) {
+        favorite = favorite1;
+    }*/
+
+    bool operator()(int32_t a, int32_t b) const {
+        if ( str ) {
+            return (*(*favorite.strVector)[a]) < (*(*favorite.strVector)[b]);
+        }
+        
+        df::language_word* word1 = (*favorite.wordPtr)[a];
+        df::language_word* word2 = (*favorite.wordPtr)[b];
+        std::string form1, form2;
+        
+        //return (*favorite)[a] < (*favorite)[b];
+        return a < b;
+    }
+};
+
 struct FullNameKey {
     hash<string> helper;
     size_t operator()(df::language_name* name) const {
@@ -127,70 +157,78 @@ struct FullNameEq {
 
 typedef unordered_set<df::language_name*, FullNameKey, FullNameEq> FullNameSet;
 
-void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<int32_t> &nameFrequency, vector<int32_t> &permutation, size_t wordmax, color_ostream& out) {
+void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<int32_t> &nameFrequency, vector<int32_t> &permutation, size_t wordmax, color_ostream& out, enum NameCollisionPolicy nameCollisionPolicy ) {
+    if ( nameCollisionPolicy == NameCollisionPolicy::ignore )
+        return;
+
     if (name->words[0] != name->words[1] && finalNames.find(name) == finalNames.end())
         return;
     
-    //out.print("b1\n");
-    //use unused name first if two exist
-    int32_t b = 0;
-    for ( size_t a = 0; a < wordmax; a++ ) {
-        int i = permutation[a];
-        if ( nameFrequency[i] != 0 ) continue;
-        name->words[b] = i;
-        if ( ++b >= 2 )
-            break;
-    }
-    //out.print("b2\n");
-    if ( b == 2 ) {
-        if ( finalNames.find(name) == finalNames.end() )
-            return;
+    if ( nameCollisionPolicy == NameCollisionPolicy::uniqueNames ) {
+        //out.print("b1\n");
+        //use unused name first if two exist
+        int32_t b = 0;
+        for ( size_t a = 0; a < wordmax; a++ ) {
+            int i = permutation[a];
+            if ( nameFrequency[i] != 0 ) continue;
+            name->words[b] = i;
+            if ( ++b >= 2 )
+                break;
+        }
+        //out.print("b2\n");
+        if ( b == 2 ) {
+            if ( finalNames.find(name) == finalNames.end() )
+                return;
+        }
     }
     //out.print("b3\n");
-    //try a random unused name: unused name -> unused full name
-    int32_t unused1 = -1;
-    int32_t count = 0;
-    for ( int32_t a = 0; a < wordmax; a++ ) {
-        if ( nameFrequency[a] != 0 ) continue;
-        
-        count++;
-        if ( (rand() / (1.0f+RAND_MAX)) < 1.0f / count ) {
-            unused1 = a;
+
+    if ( nameCollisionPolicy >= NameCollisionPolicy::randomUnused ) {
+        //try a random unused name: unused name -> unused full name
+        int32_t unused1 = -1;
+        int32_t count = 0;
+        for ( size_t a = 0; a < wordmax; a++ ) {
+            if ( nameFrequency[a] != 0 ) continue;
+            
+            count++;
+            if ( (rand() / (1.0f+RAND_MAX)) < 1.0f / count ) {
+                unused1 = a;
+            }
+        }
+        count = 0;
+        int32_t unused2 = -1;
+        for ( size_t a = 0; a < wordmax; a++ ) {
+            if ( a == unused1 ) continue;
+            if ( nameFrequency[a] != 0 ) continue;
+            
+            count++;
+            if ( (rand() / (1.0f+RAND_MAX)) < 1.0f / count ) {
+                unused2 = a;
+            }
+        }
+        if ( unused1 != -1 && unused2 != -1 ) {
+            name->words[0] = unused1;
+            name->words[1] = unused2;
+            //out.print("new: %d, %d\n", name->words[0], name->words[1]);
+            if (finalNames.find(name) == finalNames.end()) return;
         }
     }
-    count = 0;
-    int32_t unused2 = -1;
-    for ( int32_t a = 0; a < wordmax; a++ ) {
-        if ( a == unused1 ) continue;
-        if ( nameFrequency[a] != 0 ) continue;
+    
+    if ( nameCollisionPolicy >= NameCollisionPolicy::randomSecond ) {
+        //try setting second name to something random
+        for ( size_t a = 0; a < 10; a++ ) {
+            name->words[1] = (int32_t)(rand() / (1.0f + RAND_MAX) * wordmax);
+            if (name->words[0] == name->words[1]) continue;
+            if (finalNames.find(name) == finalNames.end()) return;
+        }
         
-        count++;
-        if ( (rand() / (1.0f+RAND_MAX)) < 1.0f / count ) {
-            unused2 = a;
+        //try all second names
+        for ( size_t a = 0; a < wordmax; a++ ) {
+            name->words[1] = a;
+            if (name->words[0] == name->words[1]) continue;
+            if (finalNames.find(name) == finalNames.end()) return;
         }
     }
-    if ( unused1 != -1 && unused2 != -1 ) {
-        name->words[0] = unused1;
-        name->words[1] = unused2;
-        //out.print("new: %d, %d\n", name->words[0], name->words[1]);
-        if (finalNames.find(name) == finalNames.end()) return;
-    }
-    
-#if 1
-    //try setting second name to something random
-    for ( size_t a = 0; a < 10; a++ ) {
-        name->words[1] = (int32_t)(rand() / (1.0f + RAND_MAX) * wordmax);
-        if (name->words[0] == name->words[1]) continue;
-        if (finalNames.find(name) == finalNames.end()) return;
-    }
-    
-    //try all second names
-    for ( int32_t a = 0; a < wordmax; a++ ) {
-        name->words[1] = a;
-        if (name->words[0] == name->words[1]) continue;
-        if (finalNames.find(name) == finalNames.end()) return;
-    }
-#endif
     
     //try random names
     for ( size_t a = 0; a < 2*wordmax; a++ ) {
@@ -209,6 +247,60 @@ void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<in
 }
 
 command_result writeNameHistory(color_ostream& out, vector<DwarfWrapper>& dwarves);
+
+int32_t nameDwarf(DwarfWrapper& dwarf, DwarfWrapper& parent1, DwarfWrapper& parent2, enum NameScheme nameScheme, vector<int32_t>& names, int32_t* newName) {
+    int32_t index = dwarf.childIndex % 6;
+    switch(nameScheme) {
+    case NameScheme::normal:
+        switch(index) {
+            case 0:
+                    newName[0] = names[0];
+                    newName[1] = names[1];
+                    break;
+            case 1:
+                    newName[0] = names[0];
+                    newName[1] = names[2];
+                    break;
+            case 2:
+                    newName[0] = names[0];
+                    newName[1] = names[3];
+                    break;
+            case 3:
+                    newName[0] = names[1];
+                    newName[1] = names[2];
+                    break;
+            case 4:
+                    newName[0] = names[1];
+                    newName[1] = names[3];
+                    break;
+            case 5:
+                    newName[0] = names[2];
+                    newName[1] = names[3];
+                    break;
+            default: break;
+        }
+        break;
+    case NameScheme::eldestParent:
+        if ( parent1.birthTime <= parent2.birthTime ) {
+            newName[0] = parent1.name->words[0];
+            newName[1] = parent1.name->words[1];
+        } else {
+            newName[0] = parent2.name->words[0];
+            newName[1] = parent2.name->words[1];
+        }
+        break;
+    case NameScheme::fatherName:
+        newName[0] = parent1.name->words[0];
+        newName[1] = parent1.name->words[1];
+        break;
+    case NameScheme::motherName:
+        newName[0] = parent2.name->words[0];
+        newName[1] = parent2.name->words[1];
+        break;
+    default: return -1;
+    }
+    return 1;
+}
 
 command_result heritage(color_ostream& out, vector<string>& parameters) {
     
@@ -300,7 +392,6 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                 RepeatPolicy::Names[repeatPolicy],
                 InfluencePolicy::Names[influencePolicy]
         );
-        return CR_OK;
     }
     
     clock_t start = clock();
@@ -315,6 +406,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
             continue;
         DwarfWrapper wrapper;
         wrapper.historical = true;
+        wrapper.local = false;
         wrapper.ptr = figure;
         wrapper.birthTime = figure->born_year*ticksPerYear + figure->born_seconds;
         wrapper.name = &figure->name;
@@ -332,6 +424,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
             continue;
         DwarfWrapper wrapper;
         wrapper.historical = false;
+        wrapper.local = true;
         wrapper.ptr = unit;
         wrapper.birthTime = unit->relations.birth_year*ticksPerYear + unit->relations.birth_time;
         wrapper.name = &unit->name;
@@ -358,9 +451,11 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         dwarves.push_back(wrapper);
     }
     
-    out.print("Sorting...\n");
+    if ( outputType != OutputType::none )
+        out.print("Sorting...\n");
     sort(dwarves.begin(), dwarves.end());
-    out.print("...done sorting.\n");
+    if ( outputType != OutputType::none )
+        out.print("...done sorting.\n");
     
     map<int32_t, int32_t> localIdToWrapper;
     map<int32_t, int32_t> historicalIdToWrapper;
@@ -392,6 +487,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                     out.print("Error monkopotomus: %s, %s\n", DFHack::Translation::TranslateName(dwarves[a].name, false).c_str(), DFHack::Translation::TranslateName(&figure->name, false).c_str());
                     continue;
                 }
+                dwarves[historicalIdToWrapper[figure->id]].local = true;
                 localIdToWrapper[id] = historicalIdToWrapper[figure->id];
             }
         }
@@ -481,9 +577,13 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     
     size_t wordmax = df::global::world->raws.language.words.size();
     vector<int32_t> nameFrequency(wordmax);
+    vector<int32_t> nameFrequencyFort(wordmax);
     vector<int32_t> nameAliveFrequency(wordmax);
+    vector<int32_t> nameAliveFrequencyFort(wordmax);
     vector<int32_t> nameFounder(wordmax, -1);
+    vector<int32_t> nameFounderFort(wordmax, -1);
     vector<int32_t> nameLeader(wordmax, -1);
+    vector<int32_t> nameLeaderFort(wordmax, -1);
     vector<int32_t> influence(dwarves.size(), 0);
     FullNameSet finalNames((int)(2.0f * dwarves.size()));
     
@@ -502,7 +602,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     }
     for ( size_t a = 0; a < dwarves.size(); a++ ) {
         if ( a % 10000 == 0 ) {
-            out.print("a == %d / %d\n", a, dwarves.size());
+            if ( outputType != OutputType::none )
+                out.print("a == %d / %d\n", a, dwarves.size());
         }
         int32_t newName[2];
         if ( dwarves[a].name == NULL ) continue;
@@ -543,33 +644,11 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
             dwarves[a].childIndex = parent1.childCount;
             parent1.childCount++;
             parent2.childCount++;
-            
-            int32_t index = dwarves[a].childIndex % 6;
-            switch(index) {
-                case 0:
-                        newName[0] = names[0];
-                        newName[1] = names[1];
-                        break;
-                case 1:
-                        newName[0] = names[0];
-                        newName[1] = names[2];
-                        break;
-                case 2:
-                        newName[0] = names[0];
-                        newName[1] = names[3];
-                        break;
-                case 3:
-                        newName[0] = names[1];
-                        newName[1] = names[2];
-                        break;
-                case 4:
-                        newName[0] = names[1];
-                        newName[1] = names[3];
-                        break;
-                case 5:
-                        newName[0] = names[2];
-                        newName[1] = names[3];
-                        break;
+
+            int32_t err = nameDwarf(dwarves[a], parent1, parent2, nameScheme, names, newName);
+            if ( err < 0 ) {
+                out.print("Error naming dwarf.\n");
+                return CR_FAILURE;
             }
         }
         
@@ -578,10 +657,10 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         dwarves[a].name->words[1] = newName[1];
         
         int32_t before[2] = {newName[0], newName[1]};
-        handleConflicts(dwarves[a].name, finalNames, nameFrequency, permutation, wordmax, out);
+        handleConflicts(dwarves[a].name, finalNames, nameFrequency, permutation, wordmax, out, nameCollisionPolicy);
         newName[0] = dwarves[a].name->words[0];
         newName[1] = dwarves[a].name->words[1];
-        if ( newName[0] == newName[1] ) {
+        if ( nameCollisionPolicy != NameCollisionPolicy::ignore && newName[0] == newName[1] ) {
             out.print("Repeated name! %s\n", DFHack::Translation::TranslateName(dwarves[a].name, false).c_str());
             out.print("    (%d, %d) -> (%d, %d)\n", before[0], before[1], newName[0], newName[1]);
         }
@@ -609,21 +688,32 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         
         for ( size_t b = 0; b < 2; b++ ) {
             nameFrequency[newName[b]]++;
+            if ( dwarves[a].local )
+                nameFrequencyFort[newName[b]]++;
             if ( dwarves[a].deathTime == -1 ) {
                 nameAliveFrequency[newName[b]]++;
+                if ( dwarves[a].local )
+                    nameAliveFrequencyFort[newName[b]]++;
                 if ( nameLeader[newName[b]] == -1 )
                     nameLeader[newName[b]]  = a;
+                if ( dwarves[a].local && nameLeaderFort[newName[b]] == -1 )
+                    nameLeaderFort[newName[b]] = a;
             }
-            if ( nameFounder[newName[b]] != -1) {
-                continue;
-            }
-            nameFounder[newName[b]] = 2*a+b;
+            if ( nameFounder[newName[b]] == -1 )
+                nameFounder[newName[b]] = 2*a+b;
+            if ( dwarves[a].local && nameFounderFort[newName[b]] == -1 )
+                nameFounderFort[newName[b]] = 2*a+b;
         }
-        finalNames.insert(dwarves[a].name);
+
+        if ( nameCollisionPolicy != NameCollisionPolicy::ignore )
+            finalNames.insert(dwarves[a].name);
         
         //int32_t asdf1 = dwarves[a].name->words[0];
         //out.print("%d\n", asdf1);
     }
+    
+    if ( outputType == OutputType::none || outputType == OutputType::progress )
+        return CR_OK;
     
     out.print("Computing influence.\n");
     //compute influence
@@ -663,40 +753,84 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     for ( size_t a = 0; a < wordmax; a++ ) {
         sorted.push_back(a);
     }
-    sorter.favorite = &nameAliveFrequency;
-    //sort(sorted.begin(), sorted.end(), sorter);
+    if ( outputSortType == OutputSortType::aliveUses )
+        sorter.favorite = &nameAliveFrequency;
+    else if ( outputSortType == OutputSortType::fortAliveUses )
+        sorter.favorite = &nameAliveFrequencyFort;
+    else if ( outputSortType == OutputSortType::fortLeaderAge )
+        sorter.favorite = &nameLeaderFort;
+    else if ( outputSortType == OutputSortType::fortUses )
+        sorter.favorite = &nameFrequencyFort;
+    else if ( outputSortType == OutputSortType::influence )
+        sorter.favorite == &influence;
+    else if ( outputSortType == OutputSortType::leaderAge )
+        sorter.favorite = &nameLeader;
+    else if ( outputSortType == OutputSortType::nameAge )
+        sorter.favorite = &nameFounder;
+    else if ( outputSortType == OutputSortType::totalUses )
+        sorter.favorite = &nameFrequency;
+
+    AlphabeticSorter alphaSort;
+    if ( outputSortType == OutputSortType::alphabeticTranslated ) {
+        //df::global::world->raws.language. 
+        alphaSort.favorite.wordPtr = &df::global::world->raws.language.words;
+        alphaSort.str = false;
+        sort(sorted.begin(), sorted.end(), alphaSort);
+    } else if ( outputSortType == OutputSortType::alphabeticUntranslated ) {
+        //TODO: find the correct language to translate from
+        alphaSort.favorite.strVector = &df::global::world->raws.language.translations[0]->words;
+        alphaSort.str = true;
+        sort(sorted.begin(), sorted.end(), alphaSort);
+    } else if ( outputSortType == OutputSortType::none ) {
+
+    } else {
+        sort(sorted.begin(), sorted.end(), sorter);
+    }
     
-    /*out.print("printing data\n");
+    clock_t end = clock();
+
+    out.print("printing data\n");
     //for ( int32_t a = wordmax-1; a >= 0; a-- ) {
     for ( size_t a = 0; a < wordmax; a++ ) {
         int32_t i = sorted[a];
+        if ( reverse )
+            i = sorted[wordmax-1-a];
         if ( nameFounder[i] == -1 )
             continue;
-        if ( nameLeader[i] == -1 )
+        if ( outputType != OutputType::allNames && nameLeader[i] == -1 )
+            continue;
+        if ( outputType == OutputType::fortNames && nameFrequencyFort[i] == -1 )
+            continue;
+        if ( outputType == OutputType::fortAliveNames && nameAliveFrequencyFort[i] == 0 )
+            continue;
+        if ( outputType == OutputType::aliveNames && nameAliveFrequency[i] == 0 )
             continue;
         //if ( nameInfluence[i] == 0 )
         //    continue;
         //if ( a != 0 && nameLeader[sorted[a-1]] == nameLeader[i] )
         //    continue;
         //out.print("%d, %d\n", a, i);
-        out.print("%s\n"
-                "    Founded in %d by %s\n"
-                "    Led by %s (born %d)\n"
-                "      influence: %d\n"
-                "    Living members: %d\n"
-                "    Historical members: %d\n\n",
-            df::global::world->raws.language.translations[0]->words[i]->c_str(),
-            dwarves[nameFounder[i]/2].birthTime/ticksPerYear,
-            DFHack::Translation::TranslateName(dwarves[nameFounder[i]/2].name, false).c_str(),
-            DFHack::Translation::TranslateName(dwarves[nameLeader[i]].name, false).c_str(),
-            dwarves[nameLeader[i]].birthTime/ticksPerYear,
-            nameInfluence[i],
-            nameAliveFrequency[i],
-            nameFrequency[i]
-        );
-    }*/
+        out.print("%s\n", df::global::world->raws.language.translations[0]->words[i]->c_str());
+        out.print("    Founded in %d by %s\n", dwarves[nameFounder[i]/2].birthTime/ticksPerYear, DFHack::Translation::TranslateName(dwarves[nameFounder[i]/2].name, false).c_str());
+        if ( nameLeader[i] != -1 ) {
+            out.print("    Led by %s (born %d)\n"
+                    "      influence: %d\n",
+                    DFHack::Translation::TranslateName(dwarves[nameLeader[i]].name, false).c_str(),
+                    dwarves[nameLeader[i]].birthTime/ticksPerYear,
+                    nameInfluence[i]
+                    );
+        }
+        if ( nameLeaderFort[i] != -1 ) {
+            out.print("    Locally led by %s (born %d)\n",
+                    DFHack::Translation::TranslateName(dwarves[nameLeaderFort[i]].name, false).c_str());
+        }
+        out.print("    Living members: %d\n", nameAliveFrequency[i]);
+        out.print("    Living fort members: %d\n", nameAliveFrequencyFort[i]);
+        out.print("    Total members: %d\n", nameFrequency[i]);
+        out.print("    Total fort members: %d\n", nameFrequencyFort[i]);
+
+    }
     
-    clock_t end = clock();
     float time = (float)(end - start)/CLOCKS_PER_SEC;
     out.print("Total time: %f\nTotal dwarves: %d\nDwarves per second: %f\n", time, dwarves.size(), dwarves.size() / time);
     
