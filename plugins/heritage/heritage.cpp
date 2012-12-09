@@ -20,10 +20,13 @@
 #include <string>
 #include <unordered_set>
 
+#include "heritage_customization.h"
 /*
+
+Note that in the comments and output, it often says "dwarves" when it really means "the primary race of the current fort". It should work fine with modded main races.
+
 TODO
     parts of speech
-    consider making part of the script in LUA for easier modability
 */
 
 using namespace std;
@@ -144,7 +147,7 @@ void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<in
             return;
     }
     //out.print("b3\n");
-    /*//try a random unused name: unused name -> unused full name
+    //try a random unused name: unused name -> unused full name
     int32_t unused1 = -1;
     int32_t count = 0;
     for ( int32_t a = 0; a < wordmax; a++ ) {
@@ -170,22 +173,22 @@ void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<in
         name->words[0] = unused1;
         name->words[1] = unused2;
         //out.print("new: %d, %d\n", name->words[0], name->words[1]);
-        if (finalNames.find(DFHack::Translation::TranslateName(name, false)) == finalNames.end()) return;
-    }*/
+        if (finalNames.find(name) == finalNames.end()) return;
+    }
     
-#if 0
+#if 1
     //try setting second name to something random
     for ( size_t a = 0; a < 10; a++ ) {
         name->words[1] = (int32_t)(rand() / (1.0f + RAND_MAX) * wordmax);
         if (name->words[0] == name->words[1]) continue;
-        if (finalNames.find(DFHack::Translation::TranslateName(name, false)) == finalNames.end()) return;
+        if (finalNames.find(name) == finalNames.end()) return;
     }
     
     //try all second names
     for ( int32_t a = 0; a < wordmax; a++ ) {
         name->words[1] = a;
         if (name->words[0] == name->words[1]) continue;
-        if (finalNames.find(DFHack::Translation::TranslateName(name, false)) == finalNames.end()) return;
+        if (finalNames.find(name) == finalNames.end()) return;
     }
 #endif
     
@@ -208,6 +211,98 @@ void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<in
 command_result writeNameHistory(color_ostream& out, vector<DwarfWrapper>& dwarves);
 
 command_result heritage(color_ostream& out, vector<string>& parameters) {
+    
+    enum NameScheme nameScheme = NameScheme::default_;
+    enum NameCollisionPolicy nameCollisionPolicy = NameCollisionPolicy::default_;
+    enum OutputType outputType = OutputType::default_;
+    enum OutputSortType outputSortType = OutputSortType::default_;
+    enum RepeatPolicy repeatPolicy = RepeatPolicy::default_;
+    enum InfluencePolicy influencePolicy = InfluencePolicy::default_;
+    bool reverse = false;
+    
+    size_t a;
+    for (a = 0; a < parameters.size(); a++) {
+        if ( parameters[a] == "-nameScheme" ) {
+           if ( a+1 >= parameters.size() )
+               return CR_WRONG_USAGE;
+           a++;
+           enum NameScheme t = NameScheme::getEnumByString(parameters[a]);
+           if ( t == -1 )
+               return CR_WRONG_USAGE;
+           nameScheme = t;
+        } else if ( parameters[a] == "-nameCollisionPolicy" ) {
+           if ( a+1 >= parameters.size() )
+               return CR_WRONG_USAGE; 
+
+           a++;
+           enum NameCollisionPolicy t = NameCollisionPolicy::getEnumByString(parameters[a]);
+           if ( t == -1 )
+               return CR_WRONG_USAGE;
+           nameCollisionPolicy = t;
+        } else if ( parameters[a] == "-outputType" ) {
+           if ( a+1 >= parameters.size() )
+              return CR_WRONG_USAGE; 
+
+           a++;
+           enum OutputType t = OutputType::getEnumByString(parameters[a]);
+           if ( t == -1 )
+               return CR_WRONG_USAGE;
+           outputType = t;
+        } else if ( parameters[a] == "-outputSortType" ) {
+           if ( a+1 >= parameters.size() )
+              return CR_WRONG_USAGE; 
+
+           a++;
+           enum OutputSortType t = OutputSortType::getEnumByString(parameters[a]);
+           if ( t == -1 )
+               return CR_WRONG_USAGE;
+           outputSortType = t;
+        } else if ( parameters[a] == "-repeatPolicy" ) {
+           if ( a+1 >= parameters.size() )
+              return CR_WRONG_USAGE; 
+
+           a++;
+           enum RepeatPolicy t = RepeatPolicy::getEnumByString(parameters[a]);
+           if ( t == -1 )
+               return CR_WRONG_USAGE;
+           repeatPolicy = t;
+        } else if ( parameters[a] == "-influencePolicy" ) {
+           if ( a+1 >= parameters.size() )
+              return CR_WRONG_USAGE; 
+
+           a++;
+           enum InfluencePolicy t = InfluencePolicy::getEnumByString(parameters[a]);
+           if ( t == -1 )
+               return CR_WRONG_USAGE;
+           influencePolicy = t;
+        } else if ( parameters[a] == "-reverse" ) {
+            reverse = !reverse;
+        } else {
+            return CR_WRONG_USAGE;
+        }
+    }
+    if ( a < parameters.size() )
+        return CR_WRONG_USAGE;
+
+    if ( outputType != OutputType::none ) {
+        out.print("Heritage Parameters:\n"
+                "  Name Scheme: %s\n"
+                "  Name Collision Policy: %s\n"
+                "  Output Type: %s\n"
+                "  Output Sort Type: %s%s\n"
+                "  Repeat Policy: %s\n"
+                "  Influence Policy: %s\n",
+                NameScheme::Names[nameScheme],
+                NameCollisionPolicy::Names[nameCollisionPolicy],
+                OutputType::Names[outputType],
+                OutputSortType::Names[outputSortType],
+                reverse ? " reversed" : "",
+                RepeatPolicy::Names[repeatPolicy],
+                InfluencePolicy::Names[influencePolicy]
+        );
+        return CR_OK;
+    }
+    
     clock_t start = clock();
     int32_t civ_id = df::global::ui->civ_id;
     int32_t race_id = df::global::ui->race_id;
