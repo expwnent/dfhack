@@ -108,26 +108,38 @@ typedef union {
     vector<df::language_word*> *wordPtr;
 } AlphabeticHelper;
 
+/*
+ * Returns the first valid form of the specified word.
+ **/
+string* myTranslate(int32_t word) {
+    df::language_word* lang_word = df::global::world->raws.language.words[word];
+    for ( size_t a = 0; a < sizeof(lang_word->forms)/sizeof(string); a++ ) {
+        if ( lang_word->forms[a] != "" )
+            return &lang_word->forms[a];
+    }
+    return NULL;
+}
+
 struct AlphabeticSorter {
     color_ostream* out;
     AlphabeticHelper favorite;
     bool str;
-
-    /*AlphabeticSorter(AlphabeticHelper favorite1) {
-        favorite = favorite1;
-    }*/
 
     bool operator()(int32_t a, int32_t b) const {
         if ( str ) {
             return (*(*favorite.strVector)[a]) < (*(*favorite.strVector)[b]);
         }
         
-        df::language_word* word1 = (*favorite.wordPtr)[a];
-        df::language_word* word2 = (*favorite.wordPtr)[b];
-        std::string form1, form2;
+        std::string *form1 = myTranslate(a);
+        std::string *form2 = myTranslate(b);
+        if ( form1 == NULL || form2 == NULL ) {
+            int32_t which = form1 == NULL ? a : b;
+            out->print("Error in %s, line %d: could not find valid form of word %d.\n", __FILE__, __LINE__, which);
+            return a < b;
+        }
         
+        return (*form1) < (*form2);
         //return (*favorite)[a] < (*favorite)[b];
-        return a < b;
     }
 };
 
@@ -198,7 +210,7 @@ void handleConflicts(df::language_name* name, FullNameSet& finalNames, vector<in
         count = 0;
         int32_t unused2 = -1;
         for ( size_t a = 0; a < wordmax; a++ ) {
-            if ( a == unused1 ) continue;
+            if ( a == (size_t)unused1 ) continue;
             if ( nameFrequency[a] != 0 ) continue;
             
             count++;
@@ -589,9 +601,10 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     vector<int32_t> nameLeaderFort(wordmax, -1);
     vector<int32_t> influence(dwarves.size(), 0);
     FullNameSet finalNames((int)(2.0f * dwarves.size()));
-    
+
     NameSorter sorter(&nameFounder);
     sorter.out = &out;
+    
     
     vector<int32_t> permutation;
     for ( size_t a = 0; a < wordmax; a++ ) {
@@ -714,6 +727,28 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         //int32_t asdf1 = dwarves[a].name->words[0];
         //out.print("%d\n", asdf1);
     }
+
+    out.print("Computing parts of speech.\n");
+    for ( size_t a = 0; a < dwarves.size(); a++ ) {
+        for ( int32_t b = 0; b <= 1; b++ ) {
+            if ( dwarves[a].name->words[b] == -1 )
+                continue;
+            int32_t type = -1;
+            df::language_word* lang_word = df::global::world->raws.language.words[dwarves[a].name->words[b]];
+            for ( size_t c = 0; c < sizeof(lang_word->forms)/sizeof(string); c++ ) {
+                if ( lang_word->forms[c] != "" ) {
+                    type = c;
+                    break;
+                }
+            }
+            if ( type == -1 ) {
+                //out.print("Error %s line %d: word %d\n", __FILE__, __LINE__, dwarves[a].name->words[b]);
+                //return CR_FAILURE;
+                type = 0;
+            }
+            dwarves[a].name->parts_of_speech[b] = (df::enums::part_of_speech::part_of_speech)type;
+        }
+    }
     
     if ( outputType == OutputType::none || outputType == OutputType::progress )
         return CR_OK;
@@ -765,7 +800,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     else if ( outputSortType == OutputSortType::fortUses )
         sorter.favorite = &nameFrequencyFort;
     else if ( outputSortType == OutputSortType::influence )
-        sorter.favorite == &influence;
+        sorter.favorite = &influence;
     else if ( outputSortType == OutputSortType::leaderAge )
         sorter.favorite = &nameLeader;
     else if ( outputSortType == OutputSortType::nameAge )
@@ -774,6 +809,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         sorter.favorite = &nameFrequency;
 
     AlphabeticSorter alphaSort;
+    alphaSort.out = &out;
     if ( outputSortType == OutputSortType::alphabeticTranslated ) {
         //df::global::world->raws.language. 
         alphaSort.favorite.wordPtr = &df::global::world->raws.language.words;
@@ -812,7 +848,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         //if ( a != 0 && nameLeader[sorted[a-1]] == nameLeader[i] )
         //    continue;
         //out.print("%d, %d\n", a, i);
-        out.print("%s\n", df::global::world->raws.language.translations[language]->words[i]->c_str());
+        string* translation = myTranslate(i);
+        out.print("%s (%s)\n", df::global::world->raws.language.translations[language]->words[i]->c_str(), translation == NULL ? "null" : translation->c_str());
         out.print("    Founded in %d by %s\n", dwarves[nameFounder[i]/2].birthTime/ticksPerYear, DFHack::Translation::TranslateName(dwarves[nameFounder[i]/2].name, false).c_str());
         if ( nameLeader[i] != -1 ) {
             out.print("    Led by %s (born %d)\n"
