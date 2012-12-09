@@ -397,6 +397,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     clock_t start = clock();
     int32_t civ_id = df::global::ui->civ_id;
     int32_t race_id = df::global::ui->race_id;
+    int32_t language = -1;
     vector<DwarfWrapper> dwarves;
     for ( size_t a = 0; a < df::global::world->history.figures.size(); a++ ) {
         df::historical_figure* figure = df::global::world->history.figures[a];
@@ -416,6 +417,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         wrapper.parent2Index = -1;
         wrapper.deathTime = figure->died_year == -1 ? -1 : figure->died_year*ticksPerYear + figure->died_seconds;
         dwarves.push_back(wrapper);
+        if ( language == -1 )
+            language = wrapper.name->language;
     }
     
     for ( size_t a = 0; a < df::global::world->units.all.size(); a++ ) {
@@ -777,8 +780,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         alphaSort.str = false;
         sort(sorted.begin(), sorted.end(), alphaSort);
     } else if ( outputSortType == OutputSortType::alphabeticUntranslated ) {
-        //TODO: find the correct language to translate from
-        alphaSort.favorite.strVector = &df::global::world->raws.language.translations[0]->words;
+        alphaSort.favorite.strVector = &df::global::world->raws.language.translations[language]->words;
         alphaSort.str = true;
         sort(sorted.begin(), sorted.end(), alphaSort);
     } else if ( outputSortType == OutputSortType::none ) {
@@ -810,7 +812,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         //if ( a != 0 && nameLeader[sorted[a-1]] == nameLeader[i] )
         //    continue;
         //out.print("%d, %d\n", a, i);
-        out.print("%s\n", df::global::world->raws.language.translations[0]->words[i]->c_str());
+        out.print("%s\n", df::global::world->raws.language.translations[language]->words[i]->c_str());
         out.print("    Founded in %d by %s\n", dwarves[nameFounder[i]/2].birthTime/ticksPerYear, DFHack::Translation::TranslateName(dwarves[nameFounder[i]/2].name, false).c_str());
         if ( nameLeader[i] != -1 ) {
             out.print("    Led by %s (born %d)\n"
