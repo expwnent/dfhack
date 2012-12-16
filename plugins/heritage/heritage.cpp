@@ -1,16 +1,19 @@
-#include "PluginManager.h"
-#include "Export.h"
-
 #include "DataDefs.h"
-#include "df/world.h"
+#include "Export.h"
+#include "PluginManager.h"
+
+#include "modules/Translation.h"
+#include "modules/EventManager.h"
+#include "modules/World.h"
+
+#include "df/death_info.h"
+#include "df/histfig_hf_link.h"
+#include "df/historical_figure.h"
+#include "df/language_word.h"
 #include "df/unit.h"
 #include "df/ui.h"
+#include "df/world.h"
 #include "df/world_history.h"
-#include "df/historical_figure.h"
-#include "df/histfig_hf_link.h"
-#include "df/death_info.h"
-#include "df/language_word.h"
-#include "modules/Translation.h"
 
 #include <ctime>
 #include <map>
@@ -314,15 +317,24 @@ int32_t nameDwarf(DwarfWrapper& dwarf, DwarfWrapper& parent1, DwarfWrapper& pare
     return 1;
 }
 
+enum NameScheme nameScheme = NameScheme::default_;
+enum NameCollisionPolicy nameCollisionPolicy = NameCollisionPolicy::default_;
+enum OutputType outputType = OutputType::default_;
+enum OutputSortType outputSortType = OutputSortType::default_;
+enum RepeatPolicy repeatPolicy = RepeatPolicy::default_;
+enum InfluencePolicy influencePolicy = InfluencePolicy::default_;
+bool reverseOutputSortType = false;
+
+void doHeritage(color_ostream& out, void* ptr);
+
 command_result heritage(color_ostream& out, vector<string>& parameters) {
-    
-    enum NameScheme nameScheme = NameScheme::default_;
-    enum NameCollisionPolicy nameCollisionPolicy = NameCollisionPolicy::default_;
-    enum OutputType outputType = OutputType::default_;
-    enum OutputSortType outputSortType = OutputSortType::default_;
-    enum RepeatPolicy repeatPolicy = RepeatPolicy::default_;
-    enum InfluencePolicy influencePolicy = InfluencePolicy::default_;
-    bool reverse = false;
+    nameScheme = NameScheme::default_;
+    nameCollisionPolicy = NameCollisionPolicy::default_;
+    outputType = OutputType::default_;
+    outputSortType = OutputSortType::default_;
+    repeatPolicy = RepeatPolicy::default_;
+    influencePolicy = InfluencePolicy::default_;
+    reverseOutputSortType = false;
     
     size_t a;
     for (a = 0; a < parameters.size(); a++) {
@@ -380,7 +392,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                return CR_WRONG_USAGE;
            influencePolicy = t;
         } else if ( parameters[a] == "-reverse" ) {
-            reverse = !reverse;
+            reverseOutputSortType = !reverseOutputSortType;
         } else {
             return CR_WRONG_USAGE;
         }
@@ -388,6 +400,51 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     if ( a < parameters.size() )
         return CR_WRONG_USAGE;
 
+    if ( repeatPolicy == RepeatPolicy::none ) {
+        doHeritage(out, NULL);
+        return CR_OK;
+    }
+    EventManager::EventHandler handle(doHeritage);
+    Plugin* me = Core::getInstance().getPluginManager()->getPluginByName("heritage");
+    EventManager::unregisterAll(me);
+    if ( repeatPolicy == RepeatPolicy::cancel )
+        return CR_OK;
+
+    int32_t when = World::ReadCurrentYear()*ticksPerYear;
+    if ( repeatPolicy == RepeatPolicy::monthly ) {
+        when += (World::ReadCurrentMonth()+1)*(ticksPerYear/12);
+    } else if ( repeatPolicy == RepeatPolicy::yearly ) {
+        when += ticksPerYear;
+    }
+    
+    EventManager::registerTick(handle, when, me, true);
+}
+
+void doHeritage(color_ostream& out, void* ptr) {
+    Plugin* me;
+    EventManager::EventHandler handle(doHeritage);
+    int32_t when;
+
+    switch(repeatPolicy) {
+        case RepeatPolicy::none:
+        case RepeatPolicy::cancel:
+            break;
+        case RepeatPolicy::monthly:
+        case RepeatPolicy::yearly:
+            me = Core::getInstance().getPluginManager()->getPluginByName("heritage");
+            EventManager::unregisterAll(me);
+
+            when = World::ReadCurrentYear()*ticksPerYear;
+            if ( repeatPolicy == RepeatPolicy::monthly ) {
+                when += (World::ReadCurrentMonth()+1)*(ticksPerYear/12);
+            } else if ( repeatPolicy == RepeatPolicy::yearly ) {
+                when += ticksPerYear;
+            }
+
+            EventManager::registerTick(handle, when, me, true);
+            break;
+        default: break;
+    }
     if ( outputType != OutputType::none ) {
         out.print("Heritage Parameters:\n"
                 "  Name Scheme: %s\n"
@@ -400,7 +457,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                 NameCollisionPolicy::Names[nameCollisionPolicy],
                 OutputType::Names[outputType],
                 OutputSortType::Names[outputSortType],
-                reverse ? " reversed" : "",
+                reverseOutputSortType ? " reversed" : "",
                 RepeatPolicy::Names[repeatPolicy],
                 InfluencePolicy::Names[influencePolicy]
         );
@@ -454,12 +511,14 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
             int32_t deathIndex = df::death_info::binsearch_index(df::global::world->deaths.all, deathId);
             if ( deathIndex == -1 ) {
                 out.print("Couldn't find death index.\n");
-                return CR_FAILURE;
+                return;
+                //return CR_FAILURE;
             }
             df::death_info* info = df::global::world->deaths.all[deathIndex];
             if ( info->event_year == -1 ) {
                 out.print("Death event doesn't know when it happened?\n");
-                return CR_FAILURE;
+                return;
+                //return CR_FAILURE;
             }
             wrapper.deathTime = info->event_year*ticksPerYear + info->event_time;
         }
@@ -558,7 +617,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                     if (localIdToWrapper.find(wrapper.parent1Index) == localIdToWrapper.end()) {
                         out.print("%s\n", DFHack::Translation::TranslateName(wrapper.name, false).c_str());
                         out.print("Error 3\n");
-                        return CR_FAILURE;
+                        //return CR_FAILURE;
+                        return;
                     } else
                         wrapper.parent1Index = localIdToWrapper[wrapper.parent1Index];
                 }
@@ -569,7 +629,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
                 if ( wrapper.parent2Index != -1 ) {
                     if (localIdToWrapper.find(wrapper.parent2Index) == localIdToWrapper.end()) {
                         out.print("Error 4\n");
-                        return CR_FAILURE;
+                        return;
+                        //return CR_FAILURE;
                     } else
                         wrapper.parent2Index = localIdToWrapper[wrapper.parent2Index];
                 }
@@ -664,7 +725,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
             int32_t err = nameDwarf(dwarves[a], parent1, parent2, nameScheme, names, newName);
             if ( err < 0 ) {
                 out.print("Error naming dwarf.\n");
-                return CR_FAILURE;
+                return;
+                //return CR_FAILURE;
             }
         }
         
@@ -750,8 +812,10 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         }
     }
     
-    if ( outputType == OutputType::none || outputType == OutputType::progress )
-        return CR_OK;
+    if ( outputType == OutputType::none || outputType == OutputType::progress ) {
+        return;
+        //return CR_OK;
+    }
     
     out.print("Computing influence.\n");
     //compute influence
@@ -831,7 +895,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     //for ( int32_t a = wordmax-1; a >= 0; a-- ) {
     for ( size_t a = 0; a < wordmax; a++ ) {
         int32_t i = sorted[a];
-        if ( reverse )
+        if ( reverseOutputSortType )
             i = sorted[wordmax-1-a];
         if ( nameFounder[i] == -1 )
             continue;
@@ -874,7 +938,8 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
     out.print("Total time: %f\nTotal dwarves: %d\nDwarves per second: %f\n", time, dwarves.size(), dwarves.size() / time);
     
     //return writeNameHistory(out, dwarves);
-    return CR_OK;
+    return;
+    //return CR_OK;
 }
 
 
