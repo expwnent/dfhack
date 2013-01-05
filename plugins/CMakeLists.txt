@@ -130,7 +130,7 @@ if (BUILD_SUPPORTED)
     DFHACK_PLUGIN(fix-armory fix-armory.cpp)
     # not yet. busy with other crud again...
     #DFHACK_PLUGIN(versionosd versionosd.cpp)
-    DFHACK_PLUGIN(embarkflattener embarkflattener.cpp)
+    DFHACK_PLUGIN(embarkFlattener embarkFlattener.cpp)
     DFHACK_PLUGIN(misery misery.cpp)
     #DFHACK_PLUGIN(dfstream dfstream.cpp LINK_LIBRARIES clsocket dfhack-tinythread)
 endif()

@@ -8,17 +8,17 @@
 
 using namespace DFHack;
 
-DFHACK_PLUGIN("embarkflattener");
+DFHACK_PLUGIN("embarkFlattener");
 
-command_result embarkflattener (color_ostream &out, std::vector <std::string> & parameters);
+command_result embarkFlattener (color_ostream &out, std::vector <std::string> & parameters);
 
 // Mandatory init function. If you have some global state, create it here.
 DFhackCExport command_result plugin_init ( color_ostream &out, std::vector <PluginCommand> &commands)
 {
     // Fill the command list with your commands.
     commands.push_back(PluginCommand(
-        "embarkflattener", "Digs out all the stuff above the designated z-level.",
-        embarkflattener, false,
+        "embarkFlattener", "Digs out all the stuff above the designated z-level.",
+        embarkFlattener, false,
         ""
     ));
     return CR_OK;
@@ -29,7 +29,7 @@ DFhackCExport command_result plugin_shutdown ( color_ostream &out )
    return CR_OK;
 }
 
-command_result embarkflattener (color_ostream &out, std::vector <std::string> & parameters) {
+command_result embarkFlattener (color_ostream &out, std::vector <std::string> & parameters) {
     CoreSuspender suspend;
     
     int32_t cx, cy, cz;
