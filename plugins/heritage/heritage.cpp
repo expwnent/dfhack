@@ -82,7 +82,7 @@ int32_t findRelation(df::historical_figure* unit, df::enums::histfig_hf_link_typ
     for ( size_t b = 0; b < unit->histfig_links.size(); b++ ) {
         df::histfig_hf_link* link = unit->histfig_links[b];
         if ( link->getType() == type ) {
-            return link->anon_1;
+            return link->target_hf;
         }
     }
     return -1;
@@ -404,7 +404,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
         doHeritage(out, NULL);
         return CR_OK;
     }
-    EventManager::EventHandler handle(doHeritage);
+    EventManager::EventHandler handle(doHeritage, -1);
     Plugin* me = Core::getInstance().getPluginManager()->getPluginByName("heritage");
     EventManager::unregisterAll(me);
     if ( repeatPolicy == RepeatPolicy::cancel )
@@ -422,7 +422,7 @@ command_result heritage(color_ostream& out, vector<string>& parameters) {
 
 void doHeritage(color_ostream& out, void* ptr) {
     Plugin* me;
-    EventManager::EventHandler handle(doHeritage);
+    EventManager::EventHandler handle(doHeritage, -1);
     int32_t when;
 
     switch(repeatPolicy) {
