@@ -17,21 +17,34 @@ namespace DFHack {
                 JOB_COMPLETED,
                 UNIT_DEATH,
                 ITEM_CREATED,
+                BUILDING,
+                CONSTRUCTION,
+                SYNDROME,
+                INVASION,
                 EVENT_MAX
             };
         }
 
         struct EventHandler {
             void (*eventHandler)(color_ostream&, void*); //called when the event happens
+            int32_t freq;
 
-            EventHandler(void (*eventHandlerIn)(color_ostream&, void*)): eventHandler(eventHandlerIn) {
+            EventHandler(void (*eventHandlerIn)(color_ostream&, void*), int32_t freqIn): eventHandler(eventHandlerIn), freq(freqIn) {
             }
 
             bool operator==(EventHandler& handle) const {
-                return eventHandler == handle.eventHandler;
+                return eventHandler == handle.eventHandler && freq == handle.freq;
             }
             bool operator!=(EventHandler& handle) const {
                 return !( *this == handle);
+            }
+        };
+
+        struct SyndromeData {
+            int32_t unitId;
+            int32_t syndromeIndex;
+            SyndromeData(int32_t unitId_in, int32_t syndromeIndex_in): unitId(unitId_in), syndromeIndex(syndromeIndex_in) {
+
             }
         };
         
