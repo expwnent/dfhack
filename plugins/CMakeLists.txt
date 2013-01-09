@@ -136,6 +136,7 @@ if (BUILD_SUPPORTED)
     DFHACK_PLUGIN(autoSyndrome autoSyndrome.cpp)
     DFHACK_PLUGIN(trueTransformation trueTransformation.cpp)
     DFHACK_PLUGIN(infiniteSky infiniteSky.cpp)
+    ADD_SUBDIRECTORY(architect)
 endif()
 
 

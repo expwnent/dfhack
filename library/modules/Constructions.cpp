@@ -89,8 +89,11 @@ bool Constructions::designateNew(df::coord pos, df::construction_type type,
                                  df::item_type item, int mat_index)
 {
     auto ttype = Maps::getTileType(pos);
-    if (!ttype || tileMaterial(*ttype) == tiletype_material::CONSTRUCTION)
-        return false;
+    if (!ttype || tileMaterial(*ttype) == tiletype_material::CONSTRUCTION) {
+        df::construction* constr = df::construction::find(pos);
+        if ( constr->flags.bits.top_of_wall == 0 )
+            return false;
+    }
 
     auto current = Buildings::findAtTile(pos);
     if (current)
@@ -109,6 +112,8 @@ bool Constructions::designateNew(df::coord pos, df::construction_type type,
 
     auto newcons = strict_virtual_cast<df::building_constructionst>(newinst);
     newcons->type = type;
+    newcons->mat_type = 0;
+    newcons->mat_index = mat_index;
 
     df::job_item *filter = new df::job_item();
     filter->item_type = item;
