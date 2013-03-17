@@ -113,6 +113,7 @@ include/modules/Units.h
 include/modules/Engravings.h
 include/modules/EventManager.h
 include/modules/Gui.h
+include/modules/IDCache.h
 include/modules/Items.h
 include/modules/Job.h
 include/modules/kitchen.h
@@ -135,6 +136,7 @@ modules/Units.cpp
 modules/Engravings.cpp
 modules/EventManager.cpp
 modules/Gui.cpp
+modules/IDCache.cpp
 modules/Items.cpp
 modules/Job.cpp
 modules/kitchen.cpp

@@ -40,6 +40,7 @@ using namespace std;
 #include "Types.h"
 #include "Error.h"
 #include "modules/Buildings.h"
+#include "modules/IDCache.h"
 #include "modules/Maps.h"
 #include "modules/Job.h"
 #include "ModuleFactory.h"
@@ -253,7 +254,8 @@ df::building *Buildings::findAtTile(df::coord pos)
     auto cached = locationToBuilding.find(pos);
     if (cached != locationToBuilding.end())
     {
-        auto building = df::building::find(cached->second);
+        df::building* building = DFHack::IDCache::findBuilding(cached->second);
+        //df::building::find(cached->second);
 
         if (building && building->z == pos.z &&
             building->isSettingOccupancy() &&
@@ -1117,7 +1119,7 @@ void Buildings::clearBuildings(color_ostream& out) {
 void Buildings::updateBuildings(color_ostream& out, void* ptr)
 {
     int32_t id = (int32_t)ptr;
-    auto building = df::building::find(id);
+    df::building* building = DFHack::IDCache::findBuilding(id);
 
     if (building)
     {
