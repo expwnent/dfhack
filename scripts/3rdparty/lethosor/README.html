@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Lethosor’s scripts &mdash; DFHack 0.40.24-r3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.40.24-r3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/dfhack-icon.ico"/>
+    <link rel="top" title="DFHack 0.40.24-r3 documentation" href="../../../README.html" />
+    <link rel="up" title="DFHack Scripts" href="../../../docs/Scripts.html" />
+    <link rel="next" title="List of Authors" href="../../../docs/Authors.html" />
+    <link rel="prev" title="dscorbett’s scripts" href="../dscorbett/README.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lethosor-s-scripts">
+<h1><a class="toc-backref" href="#id1">Lethosor&#8217;s scripts</a><a class="headerlink" href="#lethosor-s-scripts" title="Permalink to this headline">¶</a></h1>
+<p>A collection of DFHack scripts</p>
+<p>Links: <a class="reference external" href="https://github.com/lethosor/dfhack-scripts/issues">Issue tracker</a> |
+<a class="reference external" href="https://github.com/lethosor/dfhack-scripts/wiki">Wiki</a> |
+<a class="reference external" href="http://www.bay12forums.com/smf/index.php?topic=143875.0">Forum thread</a></p>
+<p><strong>Note:</strong> manipulator is now located in a separate repository, <a class="reference external" href="https://github.com/lethosor/dwarf-manipulator">lethosor/dwarf-manipulator</a>.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#lethosor-s-scripts" id="id1">Lethosor&#8217;s scripts</a><ul>
+<li><a class="reference internal" href="#adv-max-skills" id="id2">adv-max-skills</a></li>
+<li><a class="reference internal" href="#devel-annc-monitor" id="id3">devel/annc-monitor</a></li>
+<li><a class="reference internal" href="#devel-click-monitor" id="id4">devel/click-monitor</a></li>
+<li><a class="reference internal" href="#color-adjust" id="id5">color-adjust</a></li>
+<li><a class="reference internal" href="#embark-skills" id="id6">embark-skills</a></li>
+<li><a class="reference internal" href="#invert-colors" id="id7">invert-colors</a></li>
+<li><a class="reference internal" href="#load-screen" id="id8">load-screen</a></li>
+<li><a class="reference internal" href="#modtools-raw-lint" id="id9">modtools/raw-lint</a></li>
+<li><a class="reference internal" href="#settings-manager" id="id10">settings-manager</a></li>
+<li><a class="reference internal" href="#title-version" id="id11">title-version</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="adv-max-skills">
+<h2><a class="toc-backref" href="#id2">adv-max-skills</a><a class="headerlink" href="#adv-max-skills" title="Permalink to this headline">¶</a></h2>
+<p>When setting up an adventurer, raises all changeable skills and attributes to their maximum level.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">adv-max-skills</span></code></li>
+</ul>
+</div>
+<div class="section" id="devel-annc-monitor">
+<h2><a class="toc-backref" href="#id3">devel/annc-monitor</a><a class="headerlink" href="#devel-annc-monitor" title="Permalink to this headline">¶</a></h2>
+<p>Displays announcements and reports in the console.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">annc-monitor</span> <span class="pre">enable|start</span></code>: Begins monitoring</li>
+<li><code class="docutils literal"><span class="pre">annc-monitor</span> <span class="pre">disable|stop</span></code>: Stops monitoring</li>
+<li><code class="docutils literal"><span class="pre">annc-monitor</span> <span class="pre">interval</span> <span class="pre">X</span></code>: Sets the delay between checks for new announcements to <code class="docutils literal"><span class="pre">X</span></code> frames</li>
+</ul>
+</div>
+<div class="section" id="devel-click-monitor">
+<h2><a class="toc-backref" href="#id4">devel/click-monitor</a><a class="headerlink" href="#devel-click-monitor" title="Permalink to this headline">¶</a></h2>
+<p>Displays the grid coordinates of mouse clicks in the console. Useful for plugin/script development.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">click-monitor</span> <span class="pre">start</span></code> to begin monitoring</li>
+<li><code class="docutils literal"><span class="pre">click-monitor</span> <span class="pre">stop</span></code> to stop</li>
+</ul>
+</div>
+<div class="section" id="color-adjust">
+<h2><a class="toc-backref" href="#id5">color-adjust</a><a class="headerlink" href="#color-adjust" title="Permalink to this headline">¶</a></h2>
+<p>Adjusts the red, green, and/or blue components of all in-game colors.</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-r</span> <span class="pre">1.1</span></code> multiplies the red components of all colors by 1.1</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-gb</span> <span class="pre">0.7</span></code> multiplies the green and blue components of all colors by 0.7</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-g</span> <span class="pre">0.7</span> <span class="pre">-b</span> <span class="pre">0.7</span></code>: Equivalent to <code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-gb</span> <span class="pre">0.7</span></code></p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-a</span> <span class="pre">0.9</span></code> multiplies all (red, green, and blue) components of all colors by 0.9</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-reset</span></code> resets all colors to their original values.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Note that the original colors used by <code class="docutils literal"><span class="pre">color-adjust</span></code> are stored when <code class="docutils literal"><span class="pre">color-adjust</span></code> is first run in a DF session.
+If other scripts that change colors are run before <code class="docutils literal"><span class="pre">color-adjust</span></code>, <code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-reset</span></code> will restore the modified colors.
+To avoid this, run <code class="docutils literal"><span class="pre">color-adjust</span> <span class="pre">-a</span> <span class="pre">1</span></code> before running other scripts.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="embark-skills">
+<h2><a class="toc-backref" href="#id6">embark-skills</a><a class="headerlink" href="#embark-skills" title="Permalink to this headline">¶</a></h2>
+<p>Adjusts dwarves&#8217; skills when embarking.</p>
+<p>Note that already-used skill points are not taken into account or reset.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">embark-skills</span> <span class="pre">points</span> <span class="pre">N</span></code>: Sets the skill points remaining of the selected dwarf to <code class="docutils literal"><span class="pre">N</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">embark-skills</span> <span class="pre">points</span> <span class="pre">N</span> <span class="pre">all</span></code>: Sets the skill points remaining of all dwarves to <code class="docutils literal"><span class="pre">N</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">embark-skills</span> <span class="pre">max</span></code>: Sets all skills of the selected dwarf to &#8220;Proficient&#8221;.</li>
+<li><code class="docutils literal"><span class="pre">embark-skills</span> <span class="pre">max</span> <span class="pre">all</span></code>: Sets all skills of all dwarves to &#8220;Proficient&#8221;.</li>
+<li><code class="docutils literal"><span class="pre">embark-skills</span> <span class="pre">legendary</span></code>: Sets all skills of the selected dwarf to &#8220;Legendary&#8221;.</li>
+<li><code class="docutils literal"><span class="pre">embark-skills</span> <span class="pre">legendary</span> <span class="pre">all</span></code>: Sets all skills of all dwarves to &#8220;Legendary&#8221;.</li>
+</ul>
+</div>
+<div class="section" id="invert-colors">
+<h2><a class="toc-backref" href="#id7">invert-colors</a><a class="headerlink" href="#invert-colors" title="Permalink to this headline">¶</a></h2>
+<p>Proof-of-concept script that inverts the color scheme while DF is running.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">invert-colors</span></code></li>
+</ul>
+</div>
+<div class="section" id="load-screen">
+<h2><a class="toc-backref" href="#id8">load-screen</a><a class="headerlink" href="#load-screen" title="Permalink to this headline">¶</a></h2>
+<p>A replacement for the &#8220;continue game&#8221; screen.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">load-screen</span> <span class="pre">enable</span></code> to enable</li>
+<li><code class="docutils literal"><span class="pre">load-screen</span> <span class="pre">disable</span></code> to disable</li>
+</ul>
+</div>
+<div class="section" id="modtools-raw-lint">
+<h2><a class="toc-backref" href="#id9">modtools/raw-lint</a><a class="headerlink" href="#modtools-raw-lint" title="Permalink to this headline">¶</a></h2>
+<p>Checks for simple issues with raw files. Can be run automatically.</p>
+</div>
+<div class="section" id="settings-manager">
+<h2><a class="toc-backref" href="#id10">settings-manager</a><a class="headerlink" href="#settings-manager" title="Permalink to this headline">¶</a></h2>
+<p>An in-game settings manager (init.txt/d_init.txt)</p>
+<p>Recommended for use as a keybinding:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">keybinding</span> <span class="pre">add</span> <span class="pre">Alt-S&#64;title</span> <span class="pre">settings-manager</span></code></li>
+<li><code class="docutils literal"><span class="pre">keybinding</span> <span class="pre">add</span> <span class="pre">Alt-S&#64;dwarfmode/Default</span> <span class="pre">settings-manager</span></code></li>
+</ul>
+</div>
+<div class="section" id="title-version">
+<h2><a class="toc-backref" href="#id11">title-version</a><a class="headerlink" href="#title-version" title="Permalink to this headline">¶</a></h2>
+<p>Displays the DFHack version on the title screen next to the version number.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">title-version</span> <span class="pre">[enable]</span></code>: Shows DFHack version</li>
+<li><code class="docutils literal"><span class="pre">title-version</span> <span class="pre">disable</span></code>: Hides DFHack version</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../README.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Lethosor&#8217;s scripts</a><ul>
+<li><a class="reference internal" href="#adv-max-skills">adv-max-skills</a></li>
+<li><a class="reference internal" href="#devel-annc-monitor">devel/annc-monitor</a></li>
+<li><a class="reference internal" href="#devel-click-monitor">devel/click-monitor</a></li>
+<li><a class="reference internal" href="#color-adjust">color-adjust</a></li>
+<li><a class="reference internal" href="#embark-skills">embark-skills</a></li>
+<li><a class="reference internal" href="#invert-colors">invert-colors</a></li>
+<li><a class="reference internal" href="#load-screen">load-screen</a></li>
+<li><a class="reference internal" href="#modtools-raw-lint">modtools/raw-lint</a></li>
+<li><a class="reference internal" href="#settings-manager">settings-manager</a></li>
+<li><a class="reference internal" href="#title-version">title-version</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../README.html">Documentation overview</a><ul>
+  <li><a href="../../../docs/Scripts.html">DFHack Scripts</a><ul>
+      <li>Previous: <a href="../dscorbett/README.html" title="previous chapter">dscorbett&#8217;s scripts</a></li>
+      <li>Next: <a href="../../../docs/Authors.html" title="next chapter">List of Authors</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/scripts/3rdparty/lethosor/README.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, The DFHack Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="../../../_sources/scripts/3rdparty/lethosor/README.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

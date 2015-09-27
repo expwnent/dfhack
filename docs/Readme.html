@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DFHack Readme &mdash; DFHack 0.40.24-r3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.40.24-r3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DFHack 0.40.24-r3 documentation" href="../README.html" />
+    <link rel="next" title="DFHack Plugins" href="Plugins.html" />
+    <link rel="prev" title="Welcome to DFHack’s documentation!" href="../README.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dfhack-readme">
+<h1><a class="toc-backref" href="#id1">DFHack Readme</a><a class="headerlink" href="#dfhack-readme" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#dfhack-readme" id="id1">DFHack Readme</a><ul>
+<li><a class="reference internal" href="#getting-dfhack" id="id2">Getting DFHack</a><ul>
+<li><a class="reference internal" href="#compatibility" id="id3">Compatibility</a></li>
+<li><a class="reference internal" href="#installation-removal" id="id4">Installation/Removal</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-started" id="id5">Getting started</a><ul>
+<li><a class="reference internal" href="#using-dfhack" id="id6">Using DFHack</a></li>
+<li><a class="reference internal" href="#something-doesn-t-work-help" id="id7">Something doesn&#8217;t work, help!</a></li>
+<li><a class="reference internal" href="#commands" id="id8">Commands</a></li>
+<li><a class="reference internal" href="#the-init-file" id="id9">The init file</a></li>
+<li><a class="reference internal" href="#setting-keybindings" id="id10">Setting keybindings</a></li>
+<li><a class="reference internal" href="#hotkeys" id="id11">Hotkeys</a></li>
+<li><a class="reference internal" href="#enabling-plugins" id="id12">Enabling plugins</a></li>
+<li><a class="reference internal" href="#in-game-interface-tools" id="id13">In-game interface tools</a></li>
+<li><a class="reference internal" href="#game-progress" id="id14">Game progress</a><ul>
+<li><a class="reference internal" href="#die" id="id15">die</a></li>
+<li><a class="reference internal" href="#quicksave" id="id16">quicksave</a></li>
+<li><a class="reference internal" href="#forcepause" id="id17">forcepause</a></li>
+<li><a class="reference internal" href="#hide-show" id="id18">hide / show</a></li>
+<li><a class="reference internal" href="#nopause" id="id19">nopause</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#patched-binaries" id="id20">Patched binaries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="getting-dfhack">
+<h2><a class="toc-backref" href="#id2">Getting DFHack</a><a class="headerlink" href="#getting-dfhack" title="Permalink to this headline">¶</a></h2>
+<p>The project is currently hosted at <a class="reference external" href="http://www.github.com/">http://www.github.com/</a></p>
+<p>Recent releases are available in source and binary formats <a class="reference external" href="http://github.com/DFHack/dfhack/releases">on the releases
+page</a>, while the binaries for releases 0.40.15-r1 to 0.34.11-r4 are on <a class="reference external" href="http://dffd.bay12games.com/search.php?string=DFHack&amp;id=15">DFFD</a>.
+Even older versions are available <a class="reference external" href="http://dethware.org/dfhack/download">here</a>.</p>
+<p>All new releases are announced in <a class="reference external" href="http://www.bay12forums.com/smf/index.php?topic=139553">the bay12 forums thread</a>, which is also a
+good place for discussion and questions.</p>
+<p>If this sounds too complicated, you might prefer to <a class="reference external" href="http://dwarffortresswiki.org/index.php/Utility:Lazy_Newb_Pack">get a Starter Pack</a>.
+These are packages for new players or those who don&#8217;t want to set up everything
+themselves, and are available - with DFHack configured - for all OSes.</p>
+<div class="section" id="compatibility">
+<h3><a class="toc-backref" href="#id3">Compatibility</a><a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h3>
+<p>DFHack is available for Windows (XP or later), Linux (any modern distribution),
+or OS X (10.6.8 to 10.9).</p>
+<p>Most releases only support the version of DF mentioned in their title - for
+example, DFHack 0.40.24-r2 only supports DF 0.40.24 - but some releases
+support earlier DF versions as well.  Wherever possible, use the latest version
+built for the target version of DF.</p>
+<p>On Windows, DFHack is compatible with the SDL version of DF, but not the legacy version.</p>
+<p>It is also possible to use the Windows DFHack with Wine under Linux and OS X.</p>
+</div>
+<div class="section" id="installation-removal">
+<h3><a class="toc-backref" href="#id4">Installation/Removal</a><a class="headerlink" href="#installation-removal" title="Permalink to this headline">¶</a></h3>
+<p>Installing DFhack involves copying files into your DF folder.
+Copy the files from a release archive so that:</p>
+<ul class="simple">
+<li>On Windows, SDL.dll is replaced</li>
+<li>On Linux, the &#8216;dfhack&#8217; script is placed in the same folder as the &#8216;df&#8217; script</li>
+</ul>
+<p>Uninstalling is basically the same, in reverse:</p>
+<ul class="simple">
+<li>On Windows, first delete SDL.dll and rename SDLreal.dll to SDL.dll. Then
+remove the other DFHack files</li>
+<li>On Linux, Remove the DFHack files.</li>
+</ul>
+<p>The stonesense plugin might require some additional libraries on Linux.</p>
+<p>If any of the plugins or dfhack itself refuses to load, check the stderr.log
+file created in your DF folder.</p>
+</div>
+</div>
+<div class="section" id="getting-started">
+<h2><a class="toc-backref" href="#id5">Getting started</a><a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>If DFHack is installed correctly, it will automatically pop up a console
+window once DF is started as usual on windows. Linux and Mac OS X require
+running the dfhack script from the terminal, and will use that terminal for
+the console.</p>
+<p><strong>NOTE</strong>: The dfhack-run executable is there for calling DFHack commands in
+an already running DF+DFHack instance from external OS scripts and programs,
+and is <em>not</em> the way how you use DFHack normally.</p>
+<p>DFHack has a lot of features, which can be accessed by typing commands in the
+console, or by mapping them to keyboard shortcuts. Most of the newer and more
+user-friendly tools are designed to be at least partially used via the latter
+way.</p>
+<p>In order to set keybindings, you have to create a text configuration file
+called <code class="docutils literal"><span class="pre">dfhack.init</span></code>; the installation comes with an example version called
+<code class="docutils literal"><span class="pre">dfhack.init-example</span></code>, which is fully functional, covers all of the recent
+features and can be simply renamed to <code class="docutils literal"><span class="pre">dfhack.init</span></code>. You are encouraged to look
+through it to learn which features it makes available under which key combinations.</p>
+<p>For more information, refer to the rest of this document.</p>
+<div class="section" id="using-dfhack">
+<h3><a class="toc-backref" href="#id6">Using DFHack</a><a class="headerlink" href="#using-dfhack" title="Permalink to this headline">¶</a></h3>
+<p>DFHack basically extends what DF can do with something similar to the drop-down
+console found in Quake engine games. On Windows, this is a separate command line
+window. On linux, the terminal used to launch the dfhack script is taken over
+(so, make sure you start from a terminal). Basic interaction with dfhack
+involves entering commands into the console. For some basic instructions,
+use the &#8216;help&#8217; command. To list all possible commands, use the &#8216;ls&#8217; command.
+Many commands have their own help or detailed description. You can use
+&#8216;command help&#8217; or &#8216;command ?&#8217; to show that.</p>
+<p>The command line has some nice line editing capabilities, including history
+that&#8217;s preserved between different runs of DF (use up/down keys to go through
+the history).</p>
+<p>The second way to interact with DFHack is to bind the available commands
+to in-game hotkeys. The old way to do this is via the hotkey/zoom menu (normally
+opened with the &#8216;h&#8217; key). Binding the commands is done by assigning a command as
+a hotkey name (with &#8216;n&#8217;).</p>
+<p>A new and more flexible way is the keybinding command in the dfhack console.
+However, bindings created this way are not automatically remembered between runs
+of the game, so it becomes necessary to use the dfhack.init file to ensure that
+they are re-created every time it is loaded.</p>
+<p>Interactive commands like &#8216;liquids&#8217; cannot be used as hotkeys.</p>
+<p>Most of the commands come from plugins. Those reside in &#8216;hack/plugins/&#8217;.</p>
+</div>
+<div class="section" id="something-doesn-t-work-help">
+<h3><a class="toc-backref" href="#id7">Something doesn&#8217;t work, help!</a><a class="headerlink" href="#something-doesn-t-work-help" title="Permalink to this headline">¶</a></h3>
+<p>First, don&#8217;t panic :)</p>
+<p>Second, dfhack keeps a few log files in DF&#8217;s folder (<code class="docutils literal"><span class="pre">stderr.log</span></code> and
+<code class="docutils literal"><span class="pre">stdout.log</span></code>). Looking at these might help you solve the problem.
+If it doesn&#8217;t, you can ask for help in the forum thread or on IRC.</p>
+<p>If you found a bug, you can report it in the Bay12 DFHack thread, the issues
+tracker on github, or visit the #dfhack IRC channel on freenode.</p>
+</div>
+<div class="section" id="commands">
+<h3><a class="toc-backref" href="#id8">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<p>DFHack command syntax consists of a command name, followed by arguments separated
+by whitespace. To include whitespace in an argument, quote it in double quotes.
+To include a double quote character, use <code class="docutils literal"><span class="pre">\&quot;</span></code> inside double quotes.</p>
+<p>If the first non-whitespace character of a line is <code class="docutils literal"><span class="pre">#</span></code>, the line is treated
+as a comment, i.e. a silent no-op command.</p>
+<p>When reading commands from dfhack.init or with the <code class="docutils literal"><span class="pre">script</span></code> command, if the final character on a line is a backslash then the next uncommented line is considered a continuation of that line, with the backslash deleted.
+Commented lines are skipped, so it is possible to comment out parts of a command with the <code class="docutils literal"><span class="pre">#</span></code> character.</p>
+<p>If the first non-whitespace character is <code class="docutils literal"><span class="pre">:</span></code>, the command is parsed in a special
+alternative mode: first, non-whitespace characters immediately following the <code class="docutils literal"><span class="pre">:</span></code>
+are used as the command name; the remaining part of the line, starting with the first
+non-whitespace character <em>after</em> the command name, is used verbatim as the first argument.
+The following two command lines are exactly equivalent:</p>
+<div class="highlight-python"><div class="highlight"><pre>:foo a b &quot;c d&quot; e f
+foo &quot;a b \&quot;c d\&quot; e f&quot;
+</pre></div>
+</div>
+<p>This is intended for commands like <code class="docutils literal"><span class="pre">rb_eval</span></code> that evaluate script language statements.</p>
+<p>Almost all the commands support using the &#8216;help &lt;command-name&gt;&#8217; built-in command
+to retrieve further help without having to look at this document. Alternatively,
+some accept a &#8216;help&#8217;/&#8217;?&#8217; option on their command line.</p>
+</div>
+<div class="section" id="the-init-file">
+<h3><a class="toc-backref" href="#id9">The init file</a><a class="headerlink" href="#the-init-file" title="Permalink to this headline">¶</a></h3>
+<p>DFHack allows users to automatically run commonly-used DFHack commands when DF is first loaded, when a game is loaded, and when a game is unloaded.
+Init scripts function the same way they would if the user manually typed in their contents, but are much more convenient.
+If your DF folder contains at least one file with a name following the format <code class="docutils literal"><span class="pre">dfhack*.init</span></code> where <code class="docutils literal"><span class="pre">*</span></code> is a placeholder for any string (including the empty string), then all such files are executed in alphabetical order as init scripts when DF is first loaded.
+If your DF folder does not contain any such files, then DFHack will execute <code class="docutils literal"><span class="pre">dfhack.init-example</span></code> as an example of useful commands to be run automatically.
+If you want DFHack to do nothing on its own, then create an empty <code class="docutils literal"><span class="pre">dfhack.init</span></code> file in the main DF directory, or delete <code class="docutils literal"><span class="pre">dfhack.init-example</span></code>.
+The file <code class="docutils literal"><span class="pre">dfhack.init-example</span></code> is included as an example for users to follow if they need DFHack command executed automatically.
+We highly recommend modifying or deleting <code class="docutils literal"><span class="pre">dfhack.init-example</span></code> as its settings will not be optimal for all players.</p>
+<p>In order to facilitate savegave portability, mod merging, and general organization of init files, DFHack supports multiple init files both in the main DF directory and save-specific init files in the save folders.
+DFHack looks for init files in three places.
+It will look for them in the main DF directory, and in <code class="docutils literal"><span class="pre">data/save/_____/raw</span></code> and <code class="docutils literal"><span class="pre">data/save/_____/raw/objects</span></code> where <code class="docutils literal"><span class="pre">_____</span></code> is the name of the current savegame.
+When a game is loaded, DFHack looks for files of the form <code class="docutils literal"><span class="pre">onLoad*.init</span></code>, where <code class="docutils literal"><span class="pre">*</span></code> can be any string, including the empty string.
+When a game is unloaded, DFHack looks for files of the form <code class="docutils literal"><span class="pre">onUnload*.init</span></code>.
+Again, these files may be in any of the above three places.
+All matching init files will be sorted and executed in alphebetical order.</p>
+</div>
+<div class="section" id="setting-keybindings">
+<h3><a class="toc-backref" href="#id10">Setting keybindings</a><a class="headerlink" href="#setting-keybindings" title="Permalink to this headline">¶</a></h3>
+<p>To set keybindings, use the built-in <code class="docutils literal"><span class="pre">keybinding</span></code> command. Like any other
+command it can be used at any time from the console, but it is most useful
+in the DFHack init file.</p>
+<p>Currently, any combinations of Ctrl/Alt/Shift with A-Z, 0-9, or F1-F12 are supported.</p>
+<p>Possible ways to call the command:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">keybinding</span> <span class="pre">list</span> <span class="pre">&lt;key&gt;</span></code></dt>
+<dd>List bindings active for the key combination.</dd>
+<dt><code class="docutils literal"><span class="pre">keybinding</span> <span class="pre">clear</span> <span class="pre">&lt;key&gt;</span> <span class="pre">&lt;key&gt;...</span></code></dt>
+<dd>Remove bindings for the specified keys.</dd>
+<dt><code class="docutils literal"><span class="pre">keybinding</span> <span class="pre">add</span> <span class="pre">&lt;key&gt;</span> <span class="pre">&quot;cmdline&quot;</span> <span class="pre">&quot;cmdline&quot;...</span></code></dt>
+<dd>Add bindings for the specified key.</dd>
+<dt><code class="docutils literal"><span class="pre">keybinding</span> <span class="pre">set</span> <span class="pre">&lt;key&gt;</span> <span class="pre">&quot;cmdline&quot;</span> <span class="pre">&quot;cmdline&quot;...</span></code></dt>
+<dd>Clear, and then add bindings for the specified key.</dd>
+</dl>
+<p>The <em>&lt;key&gt;</em> parameter above has the following <em>case-sensitive</em> syntax:</p>
+<div class="highlight-python"><div class="highlight"><pre>[Ctrl-][Alt-][Shift-]KEY[@context[|context...]]
+</pre></div>
+</div>
+<p>where the <em>KEY</em> part can be any recognized key and [] denote optional parts.</p>
+<p>When multiple commands are bound to the same key combination, DFHack selects
+the first applicable one. Later &#8216;add&#8217; commands, and earlier entries within one
+&#8216;add&#8217; command have priority. Commands that are not specifically intended for use
+as a hotkey are always considered applicable.</p>
+<p>The <em>context</em> part in the key specifier above can be used to explicitly restrict
+the UI state where the binding would be applicable. If called without parameters,
+the <code class="docutils literal"><span class="pre">keybinding</span></code> command among other things prints the current context string.
+Only bindings with a <em>context</em> tag that either matches the current context fully,
+or is a prefix ending at a &#8216;/&#8217; boundary would be considered for execution, i.e.
+for context <code class="docutils literal"><span class="pre">foo/bar/baz</span></code>, possible matches are any of <code class="docutils literal"><span class="pre">&#64;foo/bar/baz</span></code>, <code class="docutils literal"><span class="pre">&#64;foo/bar</span></code>,
+<code class="docutils literal"><span class="pre">&#64;foo</span></code> or none. Multiple contexts can be specified by separating them with a
+pipe (<code class="docutils literal"><span class="pre">|</span></code>) - for example, <code class="docutils literal"><span class="pre">&#64;foo|bar|baz/foo</span></code>.</p>
+</div>
+<div class="section" id="hotkeys">
+<h3><a class="toc-backref" href="#id11">Hotkeys</a><a class="headerlink" href="#hotkeys" title="Permalink to this headline">¶</a></h3>
+<p>Opens an in-game screen showing DFHack keybindings that are active in the current context.</p>
+<img alt="../_images/hotkeys.png" src="../_images/hotkeys.png" />
+<p>Type <code class="docutils literal"><span class="pre">hotkeys</span></code> into the DFHack console to open the screen, or bind the command to a
+globally active hotkey.  The default keybinding is <code class="docutils literal"><span class="pre">Ctrl-F1</span></code>.</p>
+</div>
+<div class="section" id="enabling-plugins">
+<h3><a class="toc-backref" href="#id12">Enabling plugins</a><a class="headerlink" href="#enabling-plugins" title="Permalink to this headline">¶</a></h3>
+<p>Many plugins can be in a distinct enabled or disabled state. Some of
+them activate and deactivate automatically depending on the contents
+of the world raws. Others store their state in world data. However a
+number of them have to be enabled globally, and the init file is the
+right place to do it.</p>
+<p>Most such plugins or scripts support the built-in <code class="docutils literal"><span class="pre">enable</span></code> and <code class="docutils literal"><span class="pre">disable</span></code>
+commands. Calling them at any time without arguments prints a list
+of enabled and disabled plugins, and shows whether that can be changed
+through the same commands.</p>
+<p>To enable or disable plugins that support this, use their names as
+arguments for the command:</p>
+<div class="highlight-python"><div class="highlight"><pre>enable manipulator search
+</pre></div>
+</div>
+</div>
+<div class="section" id="in-game-interface-tools">
+<h3><a class="toc-backref" href="#id13">In-game interface tools</a><a class="headerlink" href="#in-game-interface-tools" title="Permalink to this headline">¶</a></h3>
+<p>Some tools work by displaying dialogs or overlays in the game window.</p>
+<p>In order to avoid user confusion, as a matter of policy all these tools
+must display the word &#8220;DFHack&#8221; on the screen somewhere while active.
+When that is not appropriate because they merely add keybinding hints to
+existing DF screens, they deliberately use red instead of green for the key.</p>
+</div>
+<div class="section" id="game-progress">
+<h3><a class="toc-backref" href="#id14">Game progress</a><a class="headerlink" href="#game-progress" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="die">
+<h4><a class="toc-backref" href="#id15">die</a><a class="headerlink" href="#die" title="Permalink to this headline">¶</a></h4>
+<p>Instantly kills DF without saving.</p>
+</div>
+<div class="section" id="quicksave">
+<h4><a class="toc-backref" href="#id16">quicksave</a><a class="headerlink" href="#quicksave" title="Permalink to this headline">¶</a></h4>
+<p>Save immediately, without exiting.  Only available in fortress mode.</p>
+</div>
+<div class="section" id="forcepause">
+<h4><a class="toc-backref" href="#id17">forcepause</a><a class="headerlink" href="#forcepause" title="Permalink to this headline">¶</a></h4>
+<p>Forces DF to pause. This is useful when your FPS drops below 1 and you lose
+control of the game.  Activate with <code class="docutils literal"><span class="pre">forcepause</span> <span class="pre">1</span></code>; deactivate with <code class="docutils literal"><span class="pre">forcepause</span> <span class="pre">0</span></code>.</p>
+</div>
+<div class="section" id="hide-show">
+<h4><a class="toc-backref" href="#id18">hide / show</a><a class="headerlink" href="#hide-show" title="Permalink to this headline">¶</a></h4>
+<p>Hides or shows the DFHack terminal window, respectively.  To use <code class="docutils literal"><span class="pre">show</span></code>, use
+the in-game console (default keybinding <code class="docutils literal"><span class="pre">Ctrl-Shift-P</span></code>).  Only available on Windows.</p>
+</div>
+<div class="section" id="nopause">
+<h4><a class="toc-backref" href="#id19">nopause</a><a class="headerlink" href="#nopause" title="Permalink to this headline">¶</a></h4>
+<p>Disables pausing (both manual and automatic) with the exception of pause forced
+by &#8216;reveal hell&#8217;. This is nice for digging under rivers.</p>
+</div>
+</div>
+<div class="section" id="patched-binaries">
+<h3><a class="toc-backref" href="#id20">Patched binaries</a><a class="headerlink" href="#patched-binaries" title="Permalink to this headline">¶</a></h3>
+<p>As an alternative to permanently modifying the binary, you can use the
+<code class="docutils literal"><span class="pre">binpatch</span></code> dfhack command to apply patches live in memory during a DF session.</p>
+<p>In this case, updating symbols.xml is not necessary - otherwise Linux and OSX
+users of patched binaries may have to find the relevant section in <code class="docutils literal"><span class="pre">symbols.xml</span></code>,
+and add a new line with the checksum of their executable:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;md5-hash value=&#39;????????????????????????????????&#39;/&gt;
+</pre></div>
+</div>
+<p>In order to find the correct value of the hash, look into stderr.log;
+DFHack prints an error there if it does not recognize the hash.</p>
+<p>DFHack includes a small stand-alone utility for applying and removing
+binary patches from the game executable. Use it from the regular operating
+system console:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">binpatch</span> <span class="pre">check</span> <span class="pre">&quot;Dwarf</span> <span class="pre">Fortress.exe&quot;</span> <span class="pre">patch.dif</span></code></dt>
+<dd>Checks and prints if the patch is currently applied.</dd>
+<dt><code class="docutils literal"><span class="pre">binpatch</span> <span class="pre">apply</span> <span class="pre">&quot;Dwarf</span> <span class="pre">Fortress.exe&quot;</span> <span class="pre">patch.dif</span></code></dt>
+<dd>Applies the patch, unless it is already applied or in conflict.</dd>
+<dt><code class="docutils literal"><span class="pre">binpatch</span> <span class="pre">remove</span> <span class="pre">&quot;Dwarf</span> <span class="pre">Fortress.exe&quot;</span> <span class="pre">patch.dif</span></code></dt>
+<dd>Removes the patch, unless it is already removed.</dd>
+</dl>
+<p>The patches are expected to be encoded in text format used by IDA.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../README.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DFHack Readme</a><ul>
+<li><a class="reference internal" href="#getting-dfhack">Getting DFHack</a><ul>
+<li><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li><a class="reference internal" href="#installation-removal">Installation/Removal</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-started">Getting started</a><ul>
+<li><a class="reference internal" href="#using-dfhack">Using DFHack</a></li>
+<li><a class="reference internal" href="#something-doesn-t-work-help">Something doesn&#8217;t work, help!</a></li>
+<li><a class="reference internal" href="#commands">Commands</a></li>
+<li><a class="reference internal" href="#the-init-file">The init file</a></li>
+<li><a class="reference internal" href="#setting-keybindings">Setting keybindings</a></li>
+<li><a class="reference internal" href="#hotkeys">Hotkeys</a></li>
+<li><a class="reference internal" href="#enabling-plugins">Enabling plugins</a></li>
+<li><a class="reference internal" href="#in-game-interface-tools">In-game interface tools</a></li>
+<li><a class="reference internal" href="#game-progress">Game progress</a><ul>
+<li><a class="reference internal" href="#die">die</a></li>
+<li><a class="reference internal" href="#quicksave">quicksave</a></li>
+<li><a class="reference internal" href="#forcepause">forcepause</a></li>
+<li><a class="reference internal" href="#hide-show">hide / show</a></li>
+<li><a class="reference internal" href="#nopause">nopause</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#patched-binaries">Patched binaries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../README.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../README.html" title="previous chapter">Welcome to DFHack&#8217;s documentation!</a></li>
+      <li>Next: <a href="Plugins.html" title="next chapter">DFHack Plugins</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/Readme.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, The DFHack Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="../_sources/docs/Readme.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Compiling DFHack &mdash; DFHack 0.40.24-r3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.40.24-r3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/dfhack-icon.ico"/>
+    <link rel="top" title="DFHack 0.40.24-r3 documentation" href="../README.html" />
+    <link rel="next" title="DFHack Lua API" href="Lua API.html" />
+    <link rel="prev" title="How to contribute to DFHack" href="Contributing.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="compiling-dfhack">
+<h1><a class="toc-backref" href="#id3">Compiling DFHack</a><a class="headerlink" href="#compiling-dfhack" title="Permalink to this headline">¶</a></h1>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">You don&#8217;t need to compile DFHack unless you&#8217;re developing plugins or working on the core.
+For users, modders, and authors of scripts it&#8217;s better to download the latest release instead.</p>
+</div>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#compiling-dfhack" id="id3">Compiling DFHack</a><ul>
+<li><a class="reference internal" href="#how-to-get-the-code" id="id4">How to get the code</a></li>
+<li><a class="reference internal" href="#build-types" id="id5">Build types</a></li>
+<li><a class="reference internal" href="#linux" id="id6">Linux</a></li>
+<li><a class="reference internal" href="#mac-os-x" id="id7">Mac OS X</a></li>
+<li><a class="reference internal" href="#windows" id="id8">Windows</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="how-to-get-the-code">
+<h2><a class="toc-backref" href="#id4">How to get the code</a><a class="headerlink" href="#how-to-get-the-code" title="Permalink to this headline">¶</a></h2>
+<p>DFHack doesn&#8217;t have any kind of system of code snapshots in place, so you will have to
+get code from the github repository using git.
+The code resides at <a class="reference external" href="https://github.com/DFHack/dfhack">https://github.com/DFHack/dfhack</a></p>
+<p>On Linux and OS X, having a <code class="docutils literal"><span class="pre">git</span></code> package installed is the minimal requirement (see below for OS X instructions),
+but some sort of git gui or git integration for your favorite text editor/IDE will certainly help.</p>
+<p>On Windows, you will need some sort of Windows port of git, or a GUI. Some examples:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://msysgit.github.io">http://msysgit.github.io</a> - this is a command line version of git for windows.
+Most tutorials on git usage will apply.</li>
+<li><a class="reference external" href="http://code.google.com/p/tortoisegit">http://code.google.com/p/tortoisegit</a> - this puts a pretty, graphical face on top of msysgit</li>
+</ul>
+</div></blockquote>
+<p>To get the code:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone --recursive https://github.com/DFHack/dfhack
+cd dfhack
+</pre></div>
+</div>
+<p>If your version of git does not support the <code class="docutils literal"><span class="pre">--recursive</span></code> flag, you will need to omit it and run
+<code class="docutils literal"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">update</span> <span class="pre">--init</span></code> after entering the dfhack directory.</p>
+<p>If you just want to compile DFHack or work on it by contributing patches, it&#8217;s quite
+enough to clone from the read-only address instead:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone --recursive git://github.com/DFHack/dfhack.git
+cd dfhack
+</pre></div>
+</div>
+<p>If you want to get really involved with the development, create an account on
+Github, make a clone there and then use that as your remote repository instead.
+Detailed instructions are beyond the scope of this document. If you need help,
+join us on IRC (#dfhack channel on freenode).</p>
+</div>
+<div class="section" id="build-types">
+<h2><a class="toc-backref" href="#id5">Build types</a><a class="headerlink" href="#build-types" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">cmake</span></code> allows you to pick a build type by changing this
+variable: <code class="docutils literal"><span class="pre">CMAKE_BUILD_TYPE</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre>cmake .. -DCMAKE_BUILD_TYPE:string=BUILD_TYPE
+</pre></div>
+</div>
+<p>Without specifying a build type or &#8216;None&#8217;, cmake uses the
+<code class="docutils literal"><span class="pre">CMAKE_CXX_FLAGS</span></code> variable for building.</p>
+<p>Valid and useful build types include &#8216;Release&#8217;, &#8216;Debug&#8217; and
+&#8216;RelWithDebInfo&#8217;. &#8216;Debug&#8217; is not available on Windows.</p>
+</div>
+<div class="section" id="linux">
+<h2><a class="toc-backref" href="#id6">Linux</a><a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<p>On Linux, DFHack acts as a library that shadows parts of the SDL API using LD_PRELOAD.</p>
+<div class="section" id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<p>DFHack is meant to be installed into an existing DF folder, so get one ready.</p>
+<p>For building, you need a 32-bit version of GCC. For example, to build DFHack on
+a 64-bit distribution like Arch, you&#8217;ll need the multilib development tools and libraries.
+Alternatively, you might be able to use <code class="docutils literal"><span class="pre">lxc</span></code> to
+<a class="reference external" href="http://www.bay12forums.com/smf/index.php?topic=139553.msg5435310#msg5435310">create a virtual 32-bit environment</a>.</p>
+<p>Before you can build anything, you&#8217;ll also need <code class="docutils literal"><span class="pre">cmake</span></code>. It is advisable to also get
+<code class="docutils literal"><span class="pre">ccmake</span></code> on distributions that split the cmake package into multiple parts.</p>
+<p>You also need perl and the XML::LibXML and XML::LibXSLT perl packages (for the code generation parts).
+You should be able to find them in your distro repositories (on Arch linux
+<code class="docutils literal"><span class="pre">perl-xml-libxml</span></code> and <code class="docutils literal"><span class="pre">perl-xml-libxslt</span></code>) or through <code class="docutils literal"><span class="pre">cpan</span></code>.</p>
+<p>To build Stonesense, you&#8217;ll also need OpenGL headers.</p>
+<p>Some additional dependencies for other distros are listed on the
+<a class="reference external" href="https://github.com/DFHack/dfhack/wiki/Linux-dependencies">wiki</a>.</p>
+</div>
+<div class="section" id="build">
+<h3>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h3>
+<p>Building is fairly straightforward. Enter the <code class="docutils literal"><span class="pre">build</span></code> folder (or create an
+empty folder in the DFHack directory to use instead) and start the build like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd build
+cmake .. -DCMAKE_BUILD_TYPE:string=Release -DCMAKE_INSTALL_PREFIX=/home/user/DF
+make install
+</pre></div>
+</div>
+<p>Obviously, replace the install path with path to your DF. This will build the library
+along with the normal set of plugins and install them into your DF folder.</p>
+<p>Alternatively, you can use ccmake instead of cmake:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd build
+ccmake ..
+make install
+</pre></div>
+</div>
+<p>This will show a curses-based interface that lets you set all of the
+extra options.</p>
+<p>You can also use a cmake-friendly IDE like KDevelop 4 or the cmake-gui
+program.</p>
+</div>
+<div class="section" id="fixing-the-libstdc-version-bug">
+<h3>Fixing the libstdc++ version bug<a class="headerlink" href="#fixing-the-libstdc-version-bug" title="Permalink to this headline">¶</a></h3>
+<p>When compiling dfhack yourself, it builds against your system libc.
+When Dwarf Fortress runs, it uses a libstdc++ shipped with the binary, which
+comes from GCC 4.5 and is incompatible with code compiled with newer GCC versions.
+This manifests itself with the error message:</p>
+<div class="highlight-python"><div class="highlight"><pre>./libs/Dwarf_Fortress: /pathToDF/libs/libstdc++.so.6: version
+    `GLIBCXX_3.4.15&#39; not found (required by ./hack/libdfhack.so)
+</pre></div>
+</div>
+<p>To fix this, simply remove the libstdc++ shipped with DF, it will fall back
+to your system lib and everything will work fine:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /path/to/DF/
+rm libs/libstdc++.so.6
+</pre></div>
+</div>
+<p>Alternatively, this issue can be avoided by compiling DFHack with GCC 4.5.</p>
+</div>
+</div>
+<div class="section" id="mac-os-x">
+<h2><a class="toc-backref" href="#id7">Mac OS X</a><a class="headerlink" href="#mac-os-x" title="Permalink to this headline">¶</a></h2>
+<p>DFHack functions similarly on OS X and Linux, and the majority of the
+information above regarding the build process (cmake and make) applies here
+as well.</p>
+<ul class="simple">
+<li>If you are building on 10.6, please read the subsection below titled &#8220;Snow Leopard Changes&#8221; FIRST.</li>
+<li>If you are building on 10.10+, read the &#8220;Yosemite Changes&#8221; subsection before building.</li>
+</ul>
+<ol class="arabic">
+<li><p class="first">Download and unpack a copy of the latest DF</p>
+</li>
+<li><p class="first">Install Xcode from Mac App Store</p>
+</li>
+<li><p class="first">Open Xcode, go to Preferences &gt; Downloads, and install the Command Line Tools.</p>
+</li>
+<li><p class="first">Install dependencies</p>
+<blockquote>
+<div><p>Option 1: Using Homebrew:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://brew.sh/">Install Homebrew</a> and run:</li>
+<li><code class="docutils literal"><span class="pre">brew</span> <span class="pre">tap</span> <span class="pre">homebrew/versions</span></code></li>
+<li><code class="docutils literal"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">git</span></code></li>
+<li><code class="docutils literal"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">cmake</span></code></li>
+<li><code class="docutils literal"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">gcc45</span></code></li>
+</ul>
+</div></blockquote>
+<p>Option 2: Using MacPorts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.macports.org/">Install MacPorts</a></li>
+<li>Run <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">port</span> <span class="pre">install</span> <span class="pre">gcc45</span> <span class="pre">+universal</span> <span class="pre">cmake</span> <span class="pre">+universal</span> <span class="pre">git-core</span> <span class="pre">+universal</span></code>
+This will take some time—maybe hours, depending on your machine.</li>
+</ul>
+<p>At some point during this process, it may ask you to install a Java environment; let it do so.</p>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first">Install perl dependencies</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first"><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">cpan</span></code></p>
+<p>If this is the first time you&#8217;ve run cpan, you will need to go through the setup
+process. Just stick with the defaults for everything and you&#8217;ll be fine.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">install</span> <span class="pre">XML::LibXML</span></code></p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">install</span> <span class="pre">XML::LibXSLT</span></code></p>
+</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first">Get the dfhack source:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone --recursive https://github.com/DFHack/dfhack.git
+cd dfhack
+</pre></div>
+</div>
+</li>
+<li><p class="first">Set environment variables:</p>
+</li>
+</ol>
+<blockquote>
+<div><p>Homebrew (if installed elsewhere, replace /usr/local with <code class="docutils literal"><span class="pre">$(brew</span> <span class="pre">--prefix)</span></code>):</p>
+<div class="highlight-python"><div class="highlight"><pre>export CC=/usr/local/bin/gcc-4.5
+export CXX=/usr/local/bin/g++-4.5
+</pre></div>
+</div>
+<p>Macports:</p>
+<div class="highlight-python"><div class="highlight"><pre>export CC=/opt/local/bin/gcc-mp-4.5
+export CXX=/opt/local/bin/g++-mp-4.5
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="8">
+<li><p class="first">Build dfhack:</p>
+<div class="highlight-python"><div class="highlight"><pre>mkdir build-osx
+cd build-osx
+cmake .. -DCMAKE_BUILD_TYPE:string=Release -DCMAKE_INSTALL_PREFIX=/path/to/DF/directory
+make
+make install
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="section" id="snow-leopard-changes">
+<h3>Snow Leopard Changes<a class="headerlink" href="#snow-leopard-changes" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Add a step 6.2a (before Install XML::LibXSLT)::</dt>
+<dd><p class="first last">In a separate Terminal window or tab, run:
+<code class="docutils literal"><span class="pre">sudo</span> <span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">/usr/include/libxml2/libxml</span> <span class="pre">/usr/include/libxml</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Add a step 7a (before building)::</dt>
+<dd><dl class="first last docutils">
+<dt>In &lt;dfhack directory&gt;/library/LuaTypes.cpp, change line 467 to</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">int</span> <span class="pre">len</span> <span class="pre">=</span> <span class="pre">strlen((char*)ptr);</span></code></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ol>
+</div>
+<div class="section" id="yosemite-changes">
+<h3>Yosemite Changes<a class="headerlink" href="#yosemite-changes" title="Permalink to this headline">¶</a></h3>
+<p>If you have issues building on OS X Yosemite (or above), try definining the
+following environment variable:</p>
+<div class="highlight-python"><div class="highlight"><pre>export MACOSX_DEPLOYMENT_TARGET=10.9
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="windows">
+<h2><a class="toc-backref" href="#id8">Windows</a><a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<p>On Windows, DFHack replaces the SDL library distributed with DF.</p>
+<div class="section" id="id1">
+<h3>Dependencies<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>First, you need <code class="docutils literal"><span class="pre">cmake</span></code>. Get the win32 installer version from the official
+site: <a class="reference external" href="http://www.cmake.org/cmake/resources/software.html">http://www.cmake.org/cmake/resources/software.html</a></p>
+<p>It has the usual installer wizard. Make sure you let it add its binary folder
+to your binary search PATH so the tool can be later run from anywhere.</p>
+<p>You&#8217;ll need a copy of Microsoft Visual C++ 2010. The Express version is sufficient.
+Grab it from Microsoft&#8217;s site.</p>
+<p>You&#8217;ll also need the Visual Studio 2010 SP1 update.</p>
+<p>For the code generation parts, you&#8217;ll need perl with XML::LibXML and XML::LibXSLT.
+<a class="reference external" href="http://strawberryperl.com">Strawberry Perl</a> works nicely for this.</p>
+<p>If you already have a different version of perl (for example the one from cygwin),
+you can run into some trouble. Either remove the other perl install from PATH, or
+install libxml and libxslt for it instead. Strawberry perl works though and has
+all the required packages.</p>
+</div>
+<div class="section" id="id2">
+<h3>Build<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>There are several different batch files in the <code class="docutils literal"><span class="pre">build</span></code> folder along with a script that&#8217;s used for picking the DF path.</p>
+<p>First, run set_df_path.vbs and point the dialog that pops up at your DF folder that you want to use for development.
+Next, run one of the scripts with <code class="docutils literal"><span class="pre">generate</span></code> prefix. These create the MSVC solution file(s):</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">all</span></code> will create a solution with everything enabled (and the kitchen sink).</li>
+<li><code class="docutils literal"><span class="pre">gui</span></code> will pop up the cmake gui and let you pick and choose what to build. This is probably what you want most of the time. Set the options you are interested in, then hit configure, then generate. More options can appear after the configure step.</li>
+<li><code class="docutils literal"><span class="pre">minimal</span></code> will create a minimal solution with just the bare necessities - the main library and standard plugins.</li>
+</ul>
+<p>Then you can either open the solution with MSVC or use one of the msbuild scripts:</p>
+<ul class="simple">
+<li>Scripts with <code class="docutils literal"><span class="pre">build</span></code> prefix will only build.</li>
+<li>Scripts with <code class="docutils literal"><span class="pre">install</span></code> prefix will build DFHack and install it to the previously selected DF path.</li>
+<li>Scripts with <code class="docutils literal"><span class="pre">package</span></code> prefix will build and create a .zip package of DFHack.</li>
+</ul>
+<p>When you open the solution in MSVC, make sure you never use the Debug builds. Those aren&#8217;t
+binary-compatible with DF. If you try to use a debug build with DF, you&#8217;ll only get crashes.
+So pick either Release or RelWithDebInfo build and build the INSTALL target.</p>
+<p>The <code class="docutils literal"><span class="pre">debug</span></code> scripts actually do RelWithDebInfo builds.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../README.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Compiling DFHack</a><ul>
+<li><a class="reference internal" href="#how-to-get-the-code">How to get the code</a></li>
+<li><a class="reference internal" href="#build-types">Build types</a></li>
+<li><a class="reference internal" href="#linux">Linux</a><ul>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#build">Build</a></li>
+<li><a class="reference internal" href="#fixing-the-libstdc-version-bug">Fixing the libstdc++ version bug</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mac-os-x">Mac OS X</a><ul>
+<li><a class="reference internal" href="#snow-leopard-changes">Snow Leopard Changes</a></li>
+<li><a class="reference internal" href="#yosemite-changes">Yosemite Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#windows">Windows</a><ul>
+<li><a class="reference internal" href="#id1">Dependencies</a></li>
+<li><a class="reference internal" href="#id2">Build</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../README.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Contributing.html" title="previous chapter">How to contribute to DFHack</a></li>
+      <li>Next: <a href="Lua API.html" title="next chapter">DFHack Lua API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/Compile.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, The DFHack Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="../_sources/docs/Compile.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
